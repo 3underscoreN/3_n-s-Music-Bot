@@ -66,4 +66,9 @@ async def help(ctx, command = None):
             else:
                 await ctx.send("Command not found. Check for all commands with `k!help`.")
 
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, CommandNotFound):
+        await ctx.send("Command not found. Use `k!help` for a list of commands. You can also use `k!help [command] to look up to a specific command.")
+
 bot.run(os.environ["TOKEN"])
