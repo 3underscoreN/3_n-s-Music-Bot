@@ -1,0 +1,11 @@
+[
+    "join", 
+    "leave", 
+    "play", 
+    "pause", 
+    "resume", 
+    "skip", 
+    "queue", 
+    "nowplaying", 
+    "help"
+]
