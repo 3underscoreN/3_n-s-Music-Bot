@@ -1,7 +1,6 @@
 aiohttp==3.7.4.post0
 anyio==3.6.1
 anytree==2.8.0
-apparmor==3.0.4
 appdirs==1.4.4
 argon2-cffi==21.3.0
 argon2-cffi-bindings==21.2.0
