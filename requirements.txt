@@ -13,7 +13,6 @@ backcall==0.2.0
 Beaker==1.11.0
 beautifulsoup4==4.10.0
 bleach==4.1.0
-btrfsutil==5.17
 CacheControl==0.12.6
 cffi==1.15.0
 chardet==4.0.0
