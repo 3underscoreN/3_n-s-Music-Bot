@@ -3,7 +3,7 @@ from discord.ext import commands
 import music
 # import games
 import json
-from cdifflib import get_close_matches
+from difflib import get_close_matches
 import os
 
 cogs = [music] #add games
@@ -65,7 +65,5 @@ async def help(ctx, command = None):
                 await ctx.send(f"Command not found. Did you mean: `{potential[:-2]}`? Check for all commands with `k!help`.")
             else:
                 await ctx.send("Command not found. Check for all commands with `k!help`.")
-
-        
 
 bot.run(os.environ["TOKEN"])
