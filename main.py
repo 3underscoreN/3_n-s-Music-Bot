@@ -3,7 +3,7 @@ from discord.ext import commands
 import music
 # import games
 import json
-from difflib import get_close_matches
+from cdifflib import get_close_matches
 
 cogs = [music] #add games
 myid = 376343682644836353
