@@ -4,6 +4,7 @@ import music
 # import games
 import json
 from cdifflib import get_close_matches
+import os
 
 cogs = [music] #add games
 myid = 376343682644836353
@@ -67,4 +68,4 @@ async def help(ctx, command = None):
 
         
 
-bot.run('ODk2MDA3NTcxMDU4NjEwMjA3.YWA2Ew.mopJlZkuRp9rb3svGxXl1JmHW5M')
+bot.run(os.environ["TOKEN"])
