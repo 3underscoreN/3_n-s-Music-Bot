@@ -53,7 +53,6 @@ jupyterlab==3.4.2
 jupyterlab-pygments==0.2.2
 jupyterlab-server==2.14.0
 kiwisolver==1.4.2
-LibAppArmor==3.0.4
 lxml==4.8.0
 Mako==1.1.6
 mallard-ducktype==1.0.2
