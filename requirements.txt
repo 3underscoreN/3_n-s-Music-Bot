@@ -15,7 +15,6 @@ backcall==0.2.0
 Beaker==1.11.0
 beautifulsoup4==4.10.0
 bleach==4.1.0
-btrfsutil==5.17
 CacheControl==0.12.6
 cdifflib==1.2.5
 cffi==1.15.0
@@ -57,7 +56,6 @@ jupyterlab==3.4.2
 jupyterlab-pygments==0.2.2
 jupyterlab-server==2.14.0
 kiwisolver==1.4.2
-
 lxml==4.8.0
 Mako==1.1.6
 mallard-ducktype==1.0.2
