@@ -4,7 +4,6 @@ import youtube_dl
 import asyncio
 from urllib.parse import urlparse
 
-#FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 YDL_OPTIONS = {"format":"bestaudio"}
 
 # INIT:
@@ -67,7 +66,7 @@ class music(commands.Cog):
         else:
             await ctx.send("The bot is in another channel right now. Use 'leave' first.")
             
-    @commands.command(aliases = ["lv", "l", "dc", "disconnect"])
+    @commands.command(aliases = ["lv", "l", "dc", "disconnect", "stop"])
     async def leave(self,ctx):
         global playList
         global playTitle
@@ -78,46 +77,49 @@ class music(commands.Cog):
         playTitle = []
         playUser = []
         playTime = []
-        await ctx.send("Left!")
+        await ctx.send("Voice channel left and queue is emptied.")
 
     @commands.command(aliases = ["p"])
     async def play(self,ctx,url):
-        videourl = url.split('&', 1)[0]
-        global playList
-        global YDL_OPTIONS
-        # global FFMPEG_OPTS
-        global channel
-        global playTitle
-        global playUser
-        global playTime
-        channel = ctx.channel
-        if playList == []:
-          playList.append(videourl)
-          ctx.voice_client.stop()
-          vc = ctx.voice_client 
-          with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
+        if not(ctx.author.voice.channel is None):
+          if ctx.voice_client is None:
+            await ctx.author.voice.channel.connect()
+          videourl = url.split('&', 1)[0]
+          global playList
+          global YDL_OPTIONS
+          global channel
+          global playTitle
+          global playUser
+          global playTime
+          channel = ctx.channel
+          if playList == []:
+            playList.append(videourl)
+            ctx.voice_client.stop()
+            vc = ctx.voice_client 
+            with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
+                info = ydl.extract_info(videourl, download = False)
+                ydlurl = info["formats"][0]["url"]
+                playTitle.append(info.get('title', None))
+                playTime.append(info["duration"])
+                playUser.append(ctx.author.name)
+                source = discord.FFmpegOpusAudio(ydlurl, before_options = '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5')
+                await ctx.send("Loading...")
+                await asyncio.sleep(1)
+                vc.play(source = source, after=lambda e: self.playnext(ctx))
+                await ctx.send("Playing music now.")
+                #print(playTitle[0])
+                #print(playTime[0])
+                #print(playUser[0])
+          else:
+            playList.append(videourl)
+            with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
               info = ydl.extract_info(videourl, download = False)
-              ydlurl = info["formats"][0]["url"]
               playTitle.append(info.get('title', None))
               playTime.append(info["duration"])
               playUser.append(ctx.author.name)
-              # source = await discord.FFmpegOpusAudio.from_probe(ydlurl, **FFMPEG_OPTS)
-              source = discord.FFmpegOpusAudio(ydlurl, before_options = '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5')
-              await ctx.send("Loading...")
-              await asyncio.sleep(1)
-              vc.play(source = source, after=lambda e: self.playnext(ctx))
-              await ctx.send("Playing music now.")
-              #print(playTitle[0])
-              #print(playTime[0])
-              #print(playUser[0])
+            await ctx.send("Song added to playlist!")
         else:
-          playList.append(videourl)
-          with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
-            info = ydl.extract_info(videourl, download = False)
-            playTitle.append(info.get('title', None))
-            playTime.append(info["duration"])
-            playUser.append(ctx.author.name)
-          await ctx.send("Song added to playlist!")
+          await ctx.send("Please be in a voice channel first!")
 
     @commands.command()
     async def pause(self,ctx):

@@ -1,18 +1,19 @@
 import discord
 from discord.ext import commands
 import music
-# import games
+import games
 import json
 from difflib import get_close_matches
 import os
 
-cogs = [music] #add games
+cogs = [music, games]
 myid = 376343682644836353
 bot = commands.Bot(command_prefix='k!')
 bot.remove_command('help')
+directory = os.getcwd()
 
-helpText = json.loads(open("helpText.json").read())
-COMMANDS = json.loads(open("commands.json").read())
+helpText = json.loads(open(f"{directory}/commands/helpText.json").read())
+COMMANDS = json.loads(open(f"{directory}/commands/commands.json").read())
 comString = ''
 
 for i in COMMANDS:
@@ -29,7 +30,7 @@ async def on_ready():
 
 @bot.command()
 async def shutdown(ctx):
-    print(ctx.message.author.id)
+    # print(ctx.message.author.id)
     if ctx.message.author.id == myid:
         await ctx.send("Shutting down... Check console!")
         await bot.close()
@@ -68,7 +69,7 @@ async def help(ctx, command = None):
 
 @bot.event
 async def on_command_error(ctx, error):
-    if isinstance(error, CommandNotFound):
+    if isinstance(error, commands.CommandNotFound):
         await ctx.send("Command not found. Use `k!help` for a list of commands. You can also use `k!help [command] to look up to a specific command.")
 
-bot.run(os.environ["TOKEN"])
+bot.run('ODk2MDA3NTcxMDU4NjEwMjA3.GUHAMo.iqp3vCd5_jD6tN1cif-t8kxf3668NgSe5tu6Go')
