@@ -5,6 +5,7 @@ import games
 import json
 from difflib import get_close_matches
 import os
+import random
 
 cogs = [music, games]
 myid = 376343682644836353
@@ -70,6 +71,13 @@ async def help(ctx, command = None):
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send("Command not found. Use `k!help` for a list of commands. You can also use `k!help [command] to look up to a specific command.")
+        await ctx.send("Command not found. Use `k!help` for a list of commands. You can also use `k!help [command]` to look up to a specific command.")
+    else:
+        k = 0
+        errorID = "".join(random.choice(range(10)) for k in range(6))
+        await ctx.send(f"An error has occured while executing a command. Please follow this REFID to the owner if you believe this is a bug: `{errorID}`")
+        with open(f"error_log_{errorID}.txt", "x") as f:
+            f.write(error)
+        
 
 bot.run('ODk2MDA3NTcxMDU4NjEwMjA3.GUHAMo.iqp3vCd5_jD6tN1cif-t8kxf3668NgSe5tu6Go')
