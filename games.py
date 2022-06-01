@@ -4,6 +4,7 @@ import asyncio
 import random
 import json, os
 import asyncio
+import string
 
 directory = os.getcwd()
 
@@ -21,15 +22,18 @@ class games(commands.Cog):
         print(f"{answer} generated")
         guessCount = 0
         correct = False
-        await ctx.send("The word has been generated. Start guessing by typing a 5-letter word! Note that if no input is detected for 60 seconds, the bot timeouts.\nIf you want to terminate the game manually, enter `-1`.")
+        await ctx.send("The word has been generated. Start guessing by typing a 5-letter word! Note that if no input is detected for 300 seconds, the bot timeouts.\nIf you want to terminate the game manually, enter `-1`.")
         guessStatus = [0, 0, 0, 0, 0] # 0 = Letter does not exist, 1 = Correct letter, wrong position, 2 = Correct letter and correct position
         try:
             for guessCount in range(5):
                 while True:
-                    guess = await self.bot.wait_for("message", check = lambda message: message.author == ctx.author, timeout= 60.0)
+                    guess = await self.bot.wait_for("message", check = lambda message: message.author == ctx.author, timeout= 300.0)
                     if len(guess.content.lower()) == 5:
                         try:
-                            guess.content.lower()
+                            a = guess.content.lower()
+                            for i in range(5):
+                                if not(a[i] in string.ascii_lowercase):
+                                    raise IOError
                             break
                         except:
                             await ctx.send("Error has been detected in your input. Please check your input. If you believe this is an error, please contect `3_n#7069`.If you want to terminate the game manually, enter `-1`.")         
@@ -77,7 +81,7 @@ class games(commands.Cog):
                     continue
         
             if correct:
-                await ctx.send(f"Congrats! You have guessed the word {answer} correctly!")
+                await ctx.send(f"Congrats! You have guessed the word `{answer}` correctly!")
             else:
                 await ctx.send(f"Too bad, you used up all your guesses. The correct word is {answer}.")
         except asyncio.TimeoutError:

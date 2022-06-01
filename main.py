@@ -8,7 +8,7 @@ import os
 import random
 
 cogs = [music, games]
-myid = 376343682644836353
+myid = int(os.getenv('OWNER'))
 bot = commands.Bot(command_prefix='k!')
 bot.remove_command('help')
 directory = os.getcwd()
@@ -70,14 +70,17 @@ async def help(ctx, command = None):
 
 @bot.event
 async def on_command_error(ctx, error):
+    errorID = ''
     if isinstance(error, commands.CommandNotFound):
         await ctx.send("Command not found. Use `k!help` for a list of commands. You can also use `k!help [command]` to look up to a specific command.")
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Some arguments are missing. Please check if you have inputted all required arguments.")
     else:
         k = 0
-        errorID = "".join(random.choice(range(10)) for k in range(6))
+        for k in range(6):
+            errorID += str(random.choice(range(10)))
         await ctx.send(f"An error has occured while executing a command. Please follow this REFID to the owner if you believe this is a bug: `{errorID}`")
-        with open(f"error_log_{errorID}.txt", "x") as f:
-            f.write(error)
+        print(f'{errorID}: {error}')
         
 
-bot.run('ODk2MDA3NTcxMDU4NjEwMjA3.GUHAMo.iqp3vCd5_jD6tN1cif-t8kxf3668NgSe5tu6Go')
+bot.run(os.getenv('TOKEN'))
