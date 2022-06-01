@@ -14,11 +14,18 @@ bot.remove_command('help')
 directory = os.getcwd()
 
 helpText = json.loads(open(f"{directory}/commands/helpText.json").read())
-COMMANDS = json.loads(open(f"{directory}/commands/commands.json").read())
-comString = ''
+COMMANDS_MUSIC = json.loads(open(f"{directory}/commands/commands_music.json").read())
+COMMANDS_GAMES = json.loads(open(f"{directory}/commands/commands_games.json").read())
 
-for i in COMMANDS:
-    comString += (i + '\n')
+COMMANDS = [*COMMANDS_MUSIC, *COMMANDS_GAMES]
+comString_music = ''
+comString_games = ''
+
+for i in COMMANDS_MUSIC:
+    comString_music += (i + '\n')
+
+for i in COMMANDS_GAMES:
+    comString_games += (i + '\n')
 
 
 for i in range(len(cogs)):
@@ -44,7 +51,8 @@ async def help(ctx, command = None):
     global comString
     if command == None:
         embed = discord.Embed(title="**Help Panel**", description="Here are a list of commands of the bot has!\n\nUse `k!help [command]` to get detailed info about a specific command.", color = 0x11f1f5)
-        embed.add_field(name="Music-related", value=comString, inline=True)
+        embed.add_field(name="Music-related", value=comString_music, inline=True)
+        embed.add_field(name="Games", value = comString_games, inline = True)
         embed.add_field(name="Others", value="help \n shutdown", inline=True)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)

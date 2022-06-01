@@ -22,33 +22,34 @@ class games(commands.Cog):
         print(f"{answer} generated")
         guessCount = 0
         correct = False
-        await ctx.send("The word has been generated. Start guessing by typing a 5-letter word! Note that if no input is detected for 300 seconds, the bot timeouts.\nIf you want to terminate the game manually, enter `-1`.")
+        await ctx.send("The word has been generated. Start guessing by typing a 5-letter word! Note that if no input is detected for 300 seconds, the bot timeouts.\nIf you want to terminate the game manually, enter `exit`.")
         guessStatus = [0, 0, 0, 0, 0] # 0 = Letter does not exist, 1 = Correct letter, wrong position, 2 = Correct letter and correct position
         try:
             for guessCount in range(5):
                 while True:
                     guess = await self.bot.wait_for("message", check = lambda message: message.author == ctx.author, timeout= 300.0)
-                    if len(guess.content.lower()) == 5:
+                    guess_lower = guess.content.lower()
+                    if len(guess_lower) == 5:
                         try:
-                            a = guess.content.lower()
                             for i in range(5):
-                                if not(a[i] in string.ascii_lowercase):
+                                if not(guess_lower[i] in string.ascii_lowercase):
                                     raise IOError
                             break
                         except:
-                            await ctx.send("Error has been detected in your input. Please check your input. If you believe this is an error, please contect `3_n#7069`.If you want to terminate the game manually, enter `-1`.")         
-                    elif guess.content == "-1":
+                            await ctx.send("Error has been detected in your input. Please check your input. If you believe this is an error, please contect `3_n#7069`.If you want to terminate the game manually, enter `exit`.")         
+                    elif guess.content == "exit":
                         await ctx.send(f"Game has ended due to manual termination. The word is: `{answer}`.")
                         return
                     else:
-                        await ctx.send("Please enter a 5-letter word!\nIf you want to terminate the game manually, enter `-1`.")
+                        await ctx.send("Please enter a 5-letter word!\nIf you want to terminate the game manually, enter `exit`.")
+                # check whether the inputted word is valid (but doesn't check if the word exists or not, in fact the bot won't even bother checking it!)
 
                 for i in range(5):
                     if guessStatus[i] != 2:
-                        if guess.content.lower()[i] == answer[i]:
+                        if guess_lower[i] == answer[i]:
                             guessStatus[i] = 2
                             answer2[i] = ""
-                        elif guess.content.lower()[i] in answer2: #yellow check
+                        elif guess_lower[i] in answer2: #yellow check
                             guessStatus[i] = 1
                         else: #red check
                             guessStatus[i] = 0
@@ -66,7 +67,7 @@ class games(commands.Cog):
                         guessEmoji += "🟥"
                         guessPlain += "R"
                 
-                embed = discord.Embed(title = f"You guessed `{guess.content.lower()}`.")
+                embed = discord.Embed(title = f"You guessed `{guess_lower}`.")
                 embed.add_field(name="Status:", value=guessEmoji, inline=False)
                 embed.add_field(name="Status (If emoji fails to work): ", value=guessPlain, inline=False)
                 embed.add_field(name="Legend:", value="🟩/G: Correct letter, correct place\n🟨/Y: Correct letter, wrong place\n🟥/R: Wrong letter", inline=False)
