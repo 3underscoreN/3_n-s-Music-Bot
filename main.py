@@ -23,10 +23,8 @@ comString_games = ''
 
 for i in COMMANDS_MUSIC:
     comString_music += (i + '\n')
-
 for i in COMMANDS_GAMES:
     comString_games += (i + '\n')
-
 
 for i in range(len(cogs)):
     cogs[i].setup(bot)
@@ -53,7 +51,7 @@ async def help(ctx, command = None):
         embed = discord.Embed(title="**Help Panel**", description="Here are a list of commands of the bot has!\n\nUse `k!help [command]` to get detailed info about a specific command.", color = 0x11f1f5)
         embed.add_field(name="Music-related", value=comString_music, inline=True)
         embed.add_field(name="Games", value = comString_games, inline = True)
-        embed.add_field(name="Others", value="help \n shutdown", inline=True)
+        embed.add_field(name="Others", value="help \n shutdown \n about", inline=True)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
     else:
@@ -76,6 +74,15 @@ async def help(ctx, command = None):
             else:
                 await ctx.send("Command not found. Check for all commands with `k!help`.")
 
+@bot.command()
+async def about(ctx):
+    embed=discord.Embed(title="About Page", description="MusicBot written by 3_n with ❤️", color=0x00f552)
+    embed.set_thumbnail(url="https://i.ibb.co/kMqz961/ralsei.jpg")
+    embed.add_field(name="Special Thanks", value="Alex\nLeo\nSummer\nEugene\n - for helping me test the bot and brainstorm ideas\n\nなみ\n - for giving me motivation and support and being the best, most considerate girlfriend I could ever ask for", inline=False)
+    embed.add_field(name="Issues & Suggestions", value="Please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
+    embed.set_footer(text="Bot made by 3_n#7069")
+    await ctx.send(embed=embed)
+
 @bot.event
 async def on_command_error(ctx, error):
     errorID = ''
@@ -89,6 +96,5 @@ async def on_command_error(ctx, error):
             errorID += str(random.choice(range(10)))
         await ctx.send(f"An error has occured while executing a command. Please follow this REFID to the owner if you believe this is a bug: `{errorID}`")
         print(f'{errorID}: {error}')
-        
 
 bot.run(os.getenv('TOKEN'))

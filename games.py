@@ -43,12 +43,11 @@ class games(commands.Cog):
                     else:
                         await ctx.send("Please enter a 5-letter word!\nIf you want to terminate the game manually, enter `exit`.")
                 # check whether the inputted word is valid (but doesn't check if the word exists or not, in fact the bot won't even bother checking it!)
-
                 for i in range(5):
                     if guessStatus[i] != 2:
                         if guess_lower[i] == answer[i]:
                             guessStatus[i] = 2
-                            answer2[i] = ""
+                            answer2[i] = "" #removes correct guess
                         elif guess_lower[i] in answer2: #yellow check
                             guessStatus[i] = 1
                         else: #red check
@@ -80,14 +79,12 @@ class games(commands.Cog):
                 else:
                     await ctx.send("If you want to terminate the game manually, enter `-1`.")
                     continue
-        
             if correct:
                 await ctx.send(f"Congrats! You have guessed the word `{answer}` correctly!")
             else:
                 await ctx.send(f"Too bad, you used up all your guesses. The correct word is {answer}.")
         except asyncio.TimeoutError:
             await ctx.send(f"As no input is detected, the wordle game has ended. The answer is: `{answer.lower()}`")
-
 
 def setup(bot):
     bot.add_cog(games(bot))

@@ -9,5 +9,6 @@
     "nowplaying":["`k!nowplaying`", "np", "Displays infomration of the current song.", "`k!nowplaying`\n`k!np`"],
     "help":["`k!help [command]`", "None", "Shows the panel you're currently viewing!", "`k!help play`"],
     "shutdown":["`k!shutdown`", "None", "Shuts down the bot. \n**Only to be used by the bot owner!**", "`k!shutdown`"],
-    "wordle":["`k!wordle`", "None", "Plays a game of wordle.\nIf you want to know the rules: https://en.wikipedia.org/wiki/Wordle", "`k!wordle`"]
+    "wordle":["`k!wordle`", "None", "Plays a game of wordle.\nIf you want to know the rules: https://en.wikipedia.org/wiki/Wordle", "`k!wordle`"],
+    "about":["`k!about`", "None", "Displays information about the bot, including special thanks & support information.", "`k!about`"]
 }
