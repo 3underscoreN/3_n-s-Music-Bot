@@ -84,7 +84,7 @@ class games(commands.Cog):
             else:
                 await ctx.send(f"Too bad, you used up all your guesses. The correct word is {answer}.")
         except asyncio.TimeoutError:
-            await ctx.send(f"As no input is detected, the wordle game has ended. The answer is: `{answer.lower()}`")
+            await ctx.send(f"As no input is detected, the wordle game has ended. The answer is: `{answer}`")
 
 def setup(bot):
     bot.add_cog(games(bot))

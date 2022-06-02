@@ -78,7 +78,7 @@ async def help(ctx, command = None):
 async def about(ctx):
     embed=discord.Embed(title="About Page", description="MusicBot written by 3_n with ❤️", color=0x00f552)
     embed.set_thumbnail(url="https://i.ibb.co/kMqz961/ralsei.jpg")
-    embed.add_field(name="Special Thanks", value="Alex\nLeo\nSummer\nEugene\n - for helping me test the bot and brainstorm ideas\n\nなみ\n - for giving me motivation and support and being the best, most considerate girlfriend I could ever ask for", inline=False)
+    embed.add_field(name="Special Thanks", value="Alex\nLeo\nSummer\nEugene\n - for helping me test the bot and brainstorm ideas\n\nなみ\n - for giving me motivation and support and being the best, most considerate girlfriend I could ever ask for\n", inline=False)
     embed.add_field(name="Issues & Suggestions", value="Please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
     embed.set_footer(text="Bot made by 3_n#7069")
     await ctx.send(embed=embed)
