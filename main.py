@@ -87,14 +87,22 @@ async def about(ctx):
 async def on_command_error(ctx, error):
     errorID = ''
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send("Command not found. Use `k!help` for a list of commands. You can also use `k!help [command]` to look up to a specific command.")
+        embed=discord.Embed(title="Error: Command not found", color=0xff0000)
+        embed.add_field(name="The command you entered does not seem to be valid.", value="Please double-check your entry. If you don't know what you are doing, you can use `k!help` for a list of commands availabe.\n\nYou can also use `k!help [command]` to find details about a specific command.", inline=False)
+        embed.set_footer(text="Bot made by 3_n#7069")
+        await ctx.send(embed=embed)
     elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("Some arguments are missing. Please check if you have inputted all required arguments.")
+        embed=discord.Embed(title="Error: Missing arguments", color=0xff0000)
+        embed.add_field(name="Some required arguments in your entry seems to be missing.", value="Please double-check your entry. You can use `k!help [command]` to find all the required arguments (usually bracketed by `<>`) in your command.", inline=False)
+        embed.set_footer(text="Bot made by 3_n#7069")
+        await ctx.send(embed=embed)
     else:
         k = 0
         for k in range(6):
             errorID += str(random.choice(range(10)))
-        await ctx.send(f"An error has occured while executing a command. Please follow this REFID to the owner if you believe this is a bug: `{errorID}`")
-        print(f'{errorID}: {error}')
+        embed=discord.Embed(title="Error: Unexpected error", color=0xff0000)
+        embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this error is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
+        await ctx.send(embed=embed)
+        print(f'Exception raised with ID {errorID}: {error}')
 
 bot.run(os.getenv('TOKEN'))
