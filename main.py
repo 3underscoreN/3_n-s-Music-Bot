@@ -42,7 +42,7 @@ async def shutdown(ctx):
         await bot.close()
         print("Logged out!")
     else:
-        await ctx.send("Access Denied!")
+        raise commands.NotOwner()
 
 @bot.command()
 async def help(ctx, command = None):
@@ -93,7 +93,22 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=embed)
     elif isinstance(error, commands.MissingRequiredArgument):
         embed=discord.Embed(title="Error: Missing arguments", color=0xff0000)
-        embed.add_field(name="Some required arguments in your entry seems to be missing.", value="Please double-check your entry. You can use `k!help [command]` to find all the required arguments (usually bracketed by `<>`) in your command.", inline=False)
+        embed.add_field(name="Some required arguments in your entry seems to be missing.", value="Please double-check your entry. You can use `k!help [command]` to find all the required arguments (usually bracketed by `<>`) in the command.", inline=False)
+        embed.set_footer(text="Bot made by 3_n#7069")
+        await ctx.send(embed=embed)
+    elif isinstance(error, commands.TooManyArguments):
+        embed=discord.Embed(title="Error: Too many arguments", color=0xff0000)
+        embed.add_field(name="You have entered too many arguments in your command.", value="Please double-check your entry. You can use `k!help [command]` to find the arguments that are redundant in your command.", inline=False)
+        embed.set_footer(text="Bot made by 3_n#7069")
+        await ctx.send(embed=embed)
+    elif isinstance(error, commands.NotOwner):
+        embed=discord.Embed(title="Error: Access Denied", color=0xff0000)
+        embed.add_field(name="It seems like only the owner can execute the command.", value="Please double-check your entry. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
+        embed.set_footer(text="Bot made by 3_n#7069")
+        await ctx.send(embed=embed)
+    elif isinstance(error, commands.BotMissingPermissions):
+        embed=discord.Embed(title="Error: Bot missing permission", color=0xff0000)
+        embed.add_field(name="It seems like the bot doesn't have permission to do so", value="Please politely ask moderators to fix this issue. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
     else:
@@ -101,7 +116,7 @@ async def on_command_error(ctx, error):
         for k in range(6):
             errorID += str(random.choice(range(10)))
         embed=discord.Embed(title="Error: Unexpected error", color=0xff0000)
-        embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this error is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
+        embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         await ctx.send(embed=embed)
         print(f'Exception raised with ID {errorID}: {error}')
 
