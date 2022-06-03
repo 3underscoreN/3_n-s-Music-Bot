@@ -151,8 +151,8 @@ class music(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def skip(self,ctx):
-        ctx.voice_client.stop()
-        await ctx.send("Skipped!")
+      ctx.voice_client.stop()
+      await ctx.send("Skipped!")
 
     @commands.command(aliases = ["q", "list", "ls"])
     @commands.guild_only()
@@ -172,7 +172,9 @@ class music(commands.Cog):
     async def nowplaying(self,ctx):
       try:
         embed = discord.Embed(title="**Now playing: **", color=0x11f1f5)
-        embed.add_field(name="{0}".format(playTitle[0]), value="Added by {0}\nDuration: [{1}:{2:02d}]".format(playUser[0] ,playTime[0]//60 ,playTime[0] % 60), inline=False)
+        info = pafy.new(playList[0])
+        embed.set_thumbnail(url=info.thumb)
+        embed.add_field(name="{0}".format(playTitle[0], playList[0]), value="([Play on YouTube]({3}))\nAdded by {0}\nDuration: [{1}:{2:02d}]".format(playUser[0] ,playTime[0]//60 ,playTime[0] % 60, playList[0]), inline=False)
         embed.set_footer(text="Now playing • Bot made by 3_n#7069")
         await ctx.send(embed = embed)
       except(IndexError):
