@@ -44,6 +44,7 @@ async def shutdown(ctx):
         raise commands.NotOwner()
 
 @bot.command()
+@commands.guild_only()
 async def help(ctx, command = None):
     global comString
     if command == None:
@@ -74,6 +75,7 @@ async def help(ctx, command = None):
                 await ctx.send("Command not found. Check for all commands with `k!help`.")
 
 @bot.command()
+@commands.guild_only()
 async def about(ctx):
     embed=discord.Embed(title="About Page", description="MusicBot written by 3_n with ❤️", color=0x00f552)
     embed.set_thumbnail(url="https://i.ibb.co/kMqz961/ralsei.jpg")
@@ -108,6 +110,11 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.BotMissingPermissions):
         embed=discord.Embed(title="Error: Bot missing permission", color=0xff0000)
         embed.add_field(name="It seems like the bot doesn't have permission to do so", value="Please politely ask moderators to fix this issue. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
+        embed.set_footer(text="Bot made by 3_n#7069")
+        await ctx.send(embed=embed)
+    elif isinstance(error, commands.NoPrivateMessage):
+        embed=discord.Embed(title="Error: No Direct Message", color=0xff0000)
+        embed.add_field(name="This command can't run in direct message.", value="Please run the command in a server text channel. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
     else:

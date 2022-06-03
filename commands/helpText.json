@@ -10,5 +10,6 @@
     "help":["`k!help [command]`", "None", "Shows the panel you're currently viewing!", "`k!help play`"],
     "shutdown":["`k!shutdown`", "None", "Shuts down the bot. \n**Only to be used by the bot owner!**", "`k!shutdown`"],
     "wordle":["`k!wordle`", "None", "Plays a game of wordle.\nIf you want to know the rules: https://en.wikipedia.org/wiki/Wordle", "`k!wordle`"],
-    "about":["`k!about`", "None", "Displays information about the bot, including special thanks & support information.", "`k!about`"]
+    "about":["`k!about`", "None", "Displays information about the bot, including special thanks & support information.", "`k!about`"],
+    "tictactoe":["`k!tictactoe <Ping your friend>`","ttt", "Plays a game that always draws with your friend.", "`k!tictactoe @Alice the e girl`\n`k!ttt @Alice the e girl`"]
 }

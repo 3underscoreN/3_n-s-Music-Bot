@@ -52,6 +52,7 @@ class music(commands.Cog):
           pass
 
     @commands.command(aliases = ["j"])
+    @commands.guild_only()
     async def join(self, ctx):
         global playList
         global playTitle
@@ -72,6 +73,7 @@ class music(commands.Cog):
             await ctx.send("The bot is in another channel right now. Use 'leave' first.")
             
     @commands.command(aliases = ["lv", "l", "dc", "disconnect", "stop"])
+    @commands.guild_only()
     async def leave(self,ctx):
         global playList
         global playTitle
@@ -85,6 +87,7 @@ class music(commands.Cog):
         await ctx.send("Voice channel left and queue is emptied.")
 
     @commands.command(aliases = ["p"])
+    @commands.guild_only()
     async def play(self,ctx,url):
         if not(ctx.author.voice.channel is None):
           if ctx.voice_client is None:
@@ -135,23 +138,27 @@ class music(commands.Cog):
         await ctx.send(embed=embed)
       else:
         raise error
-
+      
     @commands.command()
+    @commands.guild_only()
     async def pause(self,ctx):
       ctx.voice_client.pause()
       await ctx.send("Paused!")
 
     @commands.command()
+    @commands.guild_only()
     async def resume(self,ctx):
       ctx.voice_client.resume()
       await ctx.send("Resumed!")
 
     @commands.command()
+    @commands.guild_only()
     async def skip(self,ctx):
         ctx.voice_client.stop()
         await ctx.send("Skipped!")
 
     @commands.command(aliases = ["q", "list", "ls"])
+    @commands.guild_only()
     async def queue(self,ctx):
       embed = discord.Embed(color=0x11f1f5)
       if len(playList) > 1:
@@ -164,6 +171,7 @@ class music(commands.Cog):
         await ctx.send("There are no songs in the queue.")
 
     @commands.command(aliases = ["np"])
+    @commands.guild_only()
     async def nowplaying(self,ctx):
       try:
         embed = discord.Embed(title="**Now playing: **", color=0x11f1f5)

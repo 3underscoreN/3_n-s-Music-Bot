@@ -68,6 +68,7 @@ class games(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @commands.guild_only()
     async def wordle(self, ctx):
         player = ctx.author
         answer = random.choice(wordList).lower()
@@ -158,6 +159,7 @@ class games(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command(aliases = ["ttt"])
+    @commands.guild_only()
     async def tictactoe(self, ctx, player:discord.Member):
         player1 = ctx.author
         player2 = player
