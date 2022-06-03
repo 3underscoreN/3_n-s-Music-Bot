@@ -136,8 +136,6 @@ class music(commands.Cog):
         embed.add_field(name="It seems like the URL is invalid", value="This bot fetches information via the 11-character video ID (should be in your URL in a format of `?watch=<11-character ID>`). Please check if it is present in your URL. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
-      else:
-        raise error
       
     @commands.command()
     @commands.guild_only()
