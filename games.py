@@ -10,6 +10,59 @@ directory = os.getcwd()
 
 wordList = json.loads(open(f"{directory}/games/wordle.json").read())
 
+class TicTacToeClass():
+    def __init__(self, player1, player2):
+        self.board = [[None, None, None], [None, None, None], [None, None, None]]
+        self.player1 = [player1, ":o:"]
+        if player2 == "Computer":
+            self.player2 = [None, ":x:"]
+        else:
+            self.player2 = [player2, ":x:"]
+        self.playerList = [self.player1, self.player2]
+        self.firstPlayer = random.choice(self.playerList)
+        self.currentplayer = self.firstPlayer[0]
+        self.rotation = self.playerList.index(self.firstPlayer)
+        self.iteration = 0
+
+    def fetchPlayer(self, player):
+        if player in self.player1:
+            return self.player1
+        else:
+            return self.player2
+
+    def checkwin(self, player):
+        self.playerToCheck = self.fetchPlayer(player)
+        #row check
+        for row in self.board:
+            if len(set(row)) == 1 and row[0] == self.playerToCheck[1]:
+                return True
+        #column check
+        for column in range(3):
+            if self.board[0][column] == self.board[1][column] and self.board[1][column] == self.board[2][column]:
+                if self.board[0][column] == self.playerToCheck[1]:
+                    return True
+        #diag check
+        if (self.board[0][0] == self.board[1][1] and self.board[1][1] == self.board[2][2]) or (self.board[0][2] == self.board[1][1] and self.board[1][1] == self.board[2][0]):
+            if self.board[1][1] == self.playerToCheck[1]:
+                return True
+        return False
+
+    def entry(self, RowPos, ColumnPos, player):
+        self.playerToEnter = self.fetchPlayer(player)
+
+        if self.board[RowPos][ColumnPos] is None:
+                self.board[RowPos][ColumnPos] = self.playerToEnter[1]
+                self.iteration += 1
+        else:
+            raise Exception
+        if self.iteration == 9:
+            return -1
+        if self.checkwin(self.playerToEnter[0]):
+            return player
+        else:
+            self.rotation = (self.rotation + 1) % 2
+            return self.playerList[self.rotation][0]
+    
 class games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -104,5 +157,90 @@ class games(commands.Cog):
             embed.set_footer(text="Wordle • Bot made by 3_n#7069 • results")
             await ctx.send(embed=embed)
 
+    @commands.command(aliases = ["ttt"])
+    async def tictactoe(self, ctx, player:discord.Member):
+        player1 = ctx.author
+        player2 = player
+        TicTacToe = TicTacToeClass(player1, player2)
+        currentPlayer = TicTacToe.currentplayer
+        try:
+            if player1 == player2:
+                raise discord.InvalidData("You should find someone to play tic-tac-toe with!")
+            while not(TicTacToe.checkwin(currentPlayer)):
+                embed = discord.Embed(title = "Tic-Tac-Toe", color = 0x00fffb)
+                board = ''
+                for row in range(3):
+                    for column in range(3):
+                        if TicTacToe.board[row][column] is None:
+                            board += ':free:'
+                        else:
+                            board += TicTacToe.board[row][column]
+                    board += '\n'
+                embed.add_field(name = "Board", value = f"{board}", inline = False)
+                if currentPlayer is None: 
+                    embed.add_field(name = f"It is computer's turn! ", value = "Please wait for a bit.", inline = False)
+                else:
+                    embed.add_field(name = f"It is @{currentPlayer}'s turn! ", value = "Please play by entering a non-occupied box (1-9, where 1 is the top left and 2 is the top middle and so on).\nIf no input is detected in 120 seconds, the game will be terminated.\nYou can also terminate the game when it's your turn to play by entering `exit`.", inline = False)
+                embed.set_footer(text = "Tic-Tac-Toe • Bot made by 3_n#7069")
+                await ctx.send(embed = embed)
+                if currentPlayer != None:
+                    while True:
+                        playerInput = await self.bot.wait_for("message", check = lambda message: message.author == currentPlayer, timeout= 120.0)
+                        if playerInput.content == "exit":
+                            raise IOError
+                        try:
+                            num = int(playerInput.content)
+                            if num in range(1, 10):
+                                rawInput = [(num - 1) // 3, (num - 1) % 3]
+                                break
+                            else:
+                                raise Exception
+                        except:
+                            embed=discord.Embed(title="Error occured while processing your input.", color=0xff0000)
+                            embed.add_field(name="Please check that the number you entered is an integer between 1 and 9", value="If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
+                            embed.set_footer(text="Tic-Tac-Toe • Bot made by 3_n#7069")
+                            await ctx.send(embed = embed)
+                    currentPlayer =-TicTacToe.entry(rawInput[0], rawInput[1], currentPlayer)
+                else:
+                    await ctx.send("Computer is thinking...")
+                    currentPlayer = TicTacToe.compEntry()
+                if currentPlayer == -1:
+                    break
+            embed = discord.Embed(title = "Tic-Tac-Toe results", color = 0x00fffb)
+            board = ''
+            for row in range(3):
+                for column in range(3):
+                    if TicTacToe.board[row][column] is None:
+                        board += ':free:'
+                    else:
+                        board += TicTacToe.board[row][column]
+                board += '\n'
+            embed.add_field(name = "Board", value = f"{board}", inline = False)
+            if currentPlayer == -1:
+                embed.add_field(name = "Draw", value = "The game has ended in a draw, like most other game does.", inline = False)
+            else:
+                if currentPlayer is None: 
+                    mention = "Computer"
+                else:
+                    mention = f"@{currentPlayer}"
+                embed.add_field(name = f"{mention} wins!", value = "This game has ended and all the honor goes to them!", inline = False)
+            embed.set_footer(text = "Tic-Tac-Toe results • Bot made by 3_n#7069")
+            await ctx.send(embed = embed)
+        except asyncio.TimeoutError:
+            embed=discord.Embed(title="Tic-Tac-Toe results", color=0xffff00)
+            embed.add_field(name="Terminated", value="The game is terminated due to inactivity.", inline=False)
+            embed.set_footer(text="Tic-Tac-Toe • Bot made by 3_n#7069 • results")
+            await ctx.send(embed = embed)
+        except IOError:
+            embed=discord.Embed(title="Tic-Tac-Toe results", color=0xffff00)
+            embed.add_field(name="Terminated", value="The game is terminated due to manual termination.", inline=False)
+            embed.set_footer(text="Tic-Tac-Toe • Bot made by 3_n#7069 • results")
+            await ctx.send(embed = embed)
+        except discord.InvalidData:
+            embed=discord.Embed(title="Error: No friends detected", color=0xff0000)
+            embed.add_field(name="You are trying to play tic-tac-toe with yourself?", value="You should find someone to play with. :)", inline=False)
+            embed.set_footer(text="Bot made by 3_n#7069")
+            await ctx.send(embed = embed)
+       
 def setup(bot):
     bot.add_cog(games(bot))
