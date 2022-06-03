@@ -45,7 +45,6 @@ class music(commands.Cog):
           vc = ctx.voice_client
           info = pafy.new(url)
           filename = info.getbestaudio().url
-          print(filename)
           source = discord.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
           vc.play(source = source, after = lambda e: self.playnext(ctx))
         except:
