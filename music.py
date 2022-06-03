@@ -1,10 +1,10 @@
 import discord
 from discord.ext import commands
-import youtube_dl
+import pafy
 import asyncio
 from urllib.parse import urlparse
 
-YDL_OPTIONS = {"format":"bestaudio"}
+FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
 # INIT:
 playList = []
@@ -13,6 +13,10 @@ playUser = []
 playTime = []
 channel = ""
 # INIT END
+
+class urlInvalid(Exception):
+    def __init__(self, url):
+        self.url = url
 
 class music(commands.Cog):
     def __init__(self, bot):
@@ -24,6 +28,7 @@ class music(commands.Cog):
       global playUser
       global playTime
       global channel
+      global FFMPEG_OPTS
       if len(playList) == 1:
         playList = []
         playTitle = []
@@ -38,11 +43,11 @@ class music(commands.Cog):
           url = playList[0]
           ctx.voice_client.stop()
           vc = ctx.voice_client
-          with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
-            info = ydl.extract_info(url, download = False)
-            ydlurl = info["formats"][0]["url"]
-            source = discord.FFmpegOpusAudio(ydlurl, before_options = '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5')
-            vc.play(source = source, after=lambda e: self.playnext(ctx))
+          info = pafy.new(url)
+          filename = info.getbestaudio().url
+          print(filename)
+          source = discord.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
+          vc.play(source = source, after = lambda e: self.playnext(ctx))
         except:
           pass
 
@@ -86,40 +91,50 @@ class music(commands.Cog):
             await ctx.author.voice.channel.connect()
           videourl = url.split('&', 1)[0]
           global playList
-          global YDL_OPTIONS
           global channel
           global playTitle
           global playUser
           global playTime
+          global FFMPEG_OPTS
           channel = ctx.channel
-          if playList == []:
-            playList.append(videourl)
-            ctx.voice_client.stop()
-            vc = ctx.voice_client 
-            with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
-                info = ydl.extract_info(videourl, download = False)
-                ydlurl = info["formats"][0]["url"]
-                playTitle.append(info.get('title', None))
-                playTime.append(info["duration"])
-                playUser.append(ctx.author.name)
-                source = discord.FFmpegOpusAudio(ydlurl, before_options = '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5')
-                await ctx.send("Loading...")
-                await asyncio.sleep(1)
-                vc.play(source = source, after=lambda e: self.playnext(ctx))
-                await ctx.send("Playing music now.")
-                #print(playTitle[0])
-                #print(playTime[0])
-                #print(playUser[0])
-          else:
-            playList.append(videourl)
-            with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
-              info = ydl.extract_info(videourl, download = False)
-              playTitle.append(info.get('title', None))
-              playTime.append(info["duration"])
+          try:
+            if playList == []:
+              ctx.voice_client.stop()
+              vc = ctx.voice_client
+              info = pafy.new(videourl)
+              filename = info.getbestaudio().url
+              source = discord.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
+              vc.play(source = source, after = lambda e: self.playnext(ctx))
+              playList.append(videourl)
+              playTitle.append(info.title)
+              playTime.append(info.length)
               playUser.append(ctx.author.name)
-            await ctx.send("Song added to playlist!")
+              await asyncio.sleep(1)
+              await ctx.send(f"Playing **{info.title}** now.")
+              #print(playTitle[0])
+              #print(playTime[0])
+              #print(playUser[0])
+            else:
+              playList.append(videourl)
+              info = pafy.new(videourl)
+              playTitle.append(info.title)
+              playTime.append(info.length)
+              playUser.append(ctx.author.name)
+              await ctx.send(f"**{info.title}** added to playlist!")
+          except ValueError:
+            raise urlInvalid(url)
         else:
           await ctx.send("Please be in a voice channel first!")
+
+    @play.error
+    async def play_error(self, ctx, error):
+      if isinstance(error.__cause__, urlInvalid):
+        embed=discord.Embed(title="Error: Invalid URL", color=0xff0000)
+        embed.add_field(name="It seems like the URL is invalid", value="This bot fetches information via the 11-character video ID (should be in your URL in a format of `?watch=<11-character ID>`). Please check if it is present in your URL. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
+        embed.set_footer(text="Bot made by 3_n#7069")
+        await ctx.send(embed=embed)
+      else:
+        raise error
 
     @commands.command()
     async def pause(self,ctx):
@@ -143,7 +158,7 @@ class music(commands.Cog):
         for i in range(1, len(playList)):
           embed.add_field(name="{0}: {1}".format(i, playTitle[i]), value="Added by: {0}\nDuration: [{1}:{2:02d}]".format(playUser[i], playTime[i]//60, playTime[i] % 60), inline=False)
         TotalPlayTime = sum(playTime) - playTime[0]
-        embed.set_footer(text="Song Queue • Total Duration: {0}:{1} • Bot made by 3_n#7069".format(TotalPlayTime//60,TotalPlayTime%60))
+        embed.set_footer(text="Song Queue • Total Duration: {0}:{1:02d} • Bot made by 3_n#7069".format(TotalPlayTime//60,TotalPlayTime%60))
         await ctx.send(embed=embed)
       else:
         await ctx.send("There are no songs in the queue.")

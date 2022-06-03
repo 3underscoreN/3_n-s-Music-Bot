@@ -36,7 +36,6 @@ async def on_ready():
 
 @bot.command()
 async def shutdown(ctx):
-    # print(ctx.message.author.id)
     if ctx.message.author.id == myid:
         await ctx.send("Shutting down... Check console!")
         await bot.close()
@@ -112,12 +111,16 @@ async def on_command_error(ctx, error):
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
     else:
+        if isinstance(error, commands.CommandInvokeError):
+            raise error
+            return
         k = 0
         for k in range(6):
             errorID += str(random.choice(range(10)))
         embed=discord.Embed(title="Error: Unexpected error", color=0xff0000)
         embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         await ctx.send(embed=embed)
-        print(f'Exception raised with ID {errorID}: {error}')
+        print(f'Exception raised with ID {errorID}:')
+        raise error
 
 bot.run(os.getenv('TOKEN'))
