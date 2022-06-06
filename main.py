@@ -44,11 +44,10 @@ async def shutdown(ctx):
         raise commands.NotOwner()
 
 @bot.command()
-@commands.guild_only()
 async def help(ctx, command = None):
     global comString
     if command == None:
-        embed = discord.Embed(title="**Help Panel**", description="Here are a list of commands of the bot has!\n\nUse `k!help [command]` to get detailed info about a specific command.", color = 0x11f1f5)
+        embed = discord.Embed(title="**Help Panel**", description="Here is a list of commands the bot has!\n\nUse `k!help [command]` to get detailed info about a specific command.", color = 0x11f1f5)
         embed.add_field(name="Music-related", value=comString_music, inline=True)
         embed.add_field(name="Games", value = comString_games, inline = True)
         embed.add_field(name="Others", value="help \n shutdown \n about", inline=True)
@@ -74,8 +73,7 @@ async def help(ctx, command = None):
             else:
                 await ctx.send("Command not found. Check for all commands with `k!help`.")
 
-@bot.command()
-@commands.guild_only()
+@bot.command(aliases = ["abt"])
 async def about(ctx):
     embed=discord.Embed(title="About Page", description="MusicBot written by 3_n with ❤️", color=0x00f552)
     embed.set_thumbnail(url="https://i.ibb.co/kMqz961/ralsei.jpg")

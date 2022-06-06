@@ -10,6 +10,12 @@ directory = os.getcwd()
 
 wordList = json.loads(open(f"{directory}/games/wordle.json").read())
 
+class noFriendsDetected(Exception):
+    pass
+
+class botDetected(Exception):
+    pass
+
 class TicTacToeClass():
     def __init__(self, player1, player2):
         self.board = [[None, None, None], [None, None, None], [None, None, None]]
@@ -167,7 +173,9 @@ class games(commands.Cog):
         currentPlayer = TicTacToe.currentplayer
         try:
             if player1 == player2:
-                raise discord.InvalidData("You should find someone to play tic-tac-toe with!")
+                raise noFriendsDetected("You should find someone to play tic-tac-toe with!")
+            elif player.bot:
+                raise botDetected("You can't play with a bot!")
             while not(TicTacToe.checkwin(currentPlayer)):
                 embed = discord.Embed(title = "Tic-Tac-Toe", color = 0x00fffb)
                 board = ''
@@ -202,7 +210,7 @@ class games(commands.Cog):
                             embed.add_field(name="Please check that the number you entered is an integer between 1 and 9", value="If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
                             embed.set_footer(text="Tic-Tac-Toe • Bot made by 3_n#7069")
                             await ctx.send(embed = embed)
-                    currentPlayer =-TicTacToe.entry(rawInput[0], rawInput[1], currentPlayer)
+                    currentPlayer = TicTacToe.entry(rawInput[0], rawInput[1], currentPlayer)
                 else:
                     await ctx.send("Computer is thinking...")
                     currentPlayer = TicTacToe.compEntry()
@@ -238,9 +246,14 @@ class games(commands.Cog):
             embed.add_field(name="Terminated", value="The game is terminated due to manual termination.", inline=False)
             embed.set_footer(text="Tic-Tac-Toe • Bot made by 3_n#7069 • results")
             await ctx.send(embed = embed)
-        except discord.InvalidData:
+        except noFriendsDetected:
             embed=discord.Embed(title="Error: No friends detected", color=0xff0000)
             embed.add_field(name="You are trying to play tic-tac-toe with yourself?", value="You should find someone to play with. :)", inline=False)
+            embed.set_footer(text="Bot made by 3_n#7069")
+            await ctx.send(embed = embed)
+        except botDetected:
+            embed=discord.Embed(title="Error: Bot detected", color=0xff0000)
+            embed.add_field(name="You are trying to play tic-tac-toe with a bot?", value="Bots might not be clever enough to play the game. Find a real person!", inline=False)
             embed.set_footer(text="Bot made by 3_n#7069")
             await ctx.send(embed = embed)
        
