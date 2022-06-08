@@ -1,5 +1,5 @@
-import discord
-from discord.ext import commands
+import disnake
+from disnake.ext import commands
 import asyncio
 import random
 import json, os
@@ -81,7 +81,7 @@ class games(commands.Cog):
         answer2 = list(answer) # answer but correct guess is removed
         guessCount = 0
         correct = False
-        embed=discord.Embed(title="The word has been generated.", description="Start guessing by sending a 5-letter word (not in a command form).", color=0x00d5ff)
+        embed=disnake.Embed(title="The word has been generated.", description="Start guessing by sending a 5-letter word (not in a command form).", color=0x00d5ff)
         embed.add_field(name="Note", value="You can manually terminate the program by sending `exit`.\nThe game will also terminate if no input is detected for 5 minutes.", inline=False)
         embed.set_footer(text="Wordle • Bot made by 3_n#7069 • send ""exit"" to terminate the game")
         await ctx.send(embed=embed)
@@ -98,18 +98,18 @@ class games(commands.Cog):
                                     raise IOError
                             break
                         except:
-                            embed=discord.Embed(title="Error occured while processing your input.", color=0xff0000)
+                            embed=disnake.Embed(title="Error occured while processing your input.", color=0xff0000)
                             embed.add_field(name="Please check that there are no spaces or special character in your input.", value="If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
                             embed.set_footer(text="Wordle • send ""exit"" to terminate the game • Bot made by 3_n#7069")
                             await ctx.send(embed=embed)         
                     elif guess.content == "exit":
-                        embed=discord.Embed(title="Wordle results", color=0xffff00)
+                        embed=disnake.Embed(title="Wordle results", color=0xffff00)
                         embed.add_field(name="The game is manually terminated.", value=f"The wordle answer is `{answer}`", inline=False)
                         embed.set_footer(text="Wordle • Bot made by 3_n#7069 • results")
                         await ctx.send(embed=embed)
                         return
                     else:
-                        embed=discord.Embed(title="Error occured while processing your input.", color=0xff0000)
+                        embed=disnake.Embed(title="Error occured while processing your input.", color=0xff0000)
                         embed.add_field(name="Please check if you inputted a 5-letter word.", value="If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
                         embed.set_footer(text="Wordle • send ""exit"" to terminate the game • Bot made by 3_n#7069")
                         await ctx.send(embed=embed)   
@@ -136,7 +136,7 @@ class games(commands.Cog):
                         guessEmoji += "🟥"
                         guessPlain += "R"
                 
-                embed = discord.Embed(title = f"You guessed `{guess_lower}`.")
+                embed = disnake.Embed(title = f"You guessed `{guess_lower}`.")
                 embed.add_field(name="Status:", value=guessEmoji, inline=False)
                 embed.add_field(name="Status (If emoji fails to work): ", value=guessPlain, inline=False)
                 embed.add_field(name="Legend:", value="🟩/G: Correct letter, correct place\n🟨/Y: Correct letter, wrong place\n🟥/R: Wrong letter", inline=False)
@@ -149,24 +149,24 @@ class games(commands.Cog):
                 else:
                     continue
             if correct:
-                embed=discord.Embed(title="Wordle results", color=0x00ff00)
+                embed=disnake.Embed(title="Wordle results", color=0x00ff00)
                 embed.add_field(name="Congrats! You have guessed the word correctly.", value=f"The wordle answer is `{answer}`", inline=False)
                 embed.set_footer(text="Wordle • Bot made by 3_n#7069 • results")
                 await ctx.send(embed=embed) 
             else:
-                embed=discord.Embed(title="Wordle results", color=0xffff00)
+                embed=disnake.Embed(title="Wordle results", color=0xffff00)
                 embed.add_field(name="Aww, you used up all your guesses. :(", value=f"The wordle answer is `{answer}`", inline=False)
                 embed.set_footer(text="Wordle • Bot made by 3_n#7069 • results")
                 await ctx.send(embed=embed)
         except asyncio.TimeoutError:
-            embed=discord.Embed(title="Wordle results", color=0xffff00)
+            embed=disnake.Embed(title="Wordle results", color=0xffff00)
             embed.add_field(name="The game is terminated due to inactivity.", value=f"The wordle answer is `{answer}`", inline=False)
             embed.set_footer(text="Wordle • Bot made by 3_n#7069 • results")
             await ctx.send(embed=embed)
 
     @commands.command(aliases = ["ttt"])
     @commands.guild_only()
-    async def tictactoe(self, ctx, player:discord.Member):
+    async def tictactoe(self, ctx, player:disnake.Member):
         player1 = ctx.author
         player2 = player
         TicTacToe = TicTacToeClass(player1, player2)
@@ -177,7 +177,7 @@ class games(commands.Cog):
             elif player.bot:
                 raise botDetected("You can't play with a bot!")
             while not(TicTacToe.checkwin(currentPlayer)):
-                embed = discord.Embed(title = "Tic-Tac-Toe", color = 0x00fffb)
+                embed = disnake.Embed(title = "Tic-Tac-Toe", color = 0x00fffb)
                 board = ''
                 for row in range(3):
                     for column in range(3):
@@ -206,7 +206,7 @@ class games(commands.Cog):
                             else:
                                 raise Exception
                         except:
-                            embed=discord.Embed(title="Error occured while processing your input.", color=0xff0000)
+                            embed=disnake.Embed(title="Error occured while processing your input.", color=0xff0000)
                             embed.add_field(name="Please check that the number you entered is an integer between 1 and 9", value="If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
                             embed.set_footer(text="Tic-Tac-Toe • Bot made by 3_n#7069")
                             await ctx.send(embed = embed)
@@ -216,7 +216,7 @@ class games(commands.Cog):
                     currentPlayer = TicTacToe.compEntry()
                 if currentPlayer == -1:
                     break
-            embed = discord.Embed(title = "Tic-Tac-Toe results", color = 0x00fffb)
+            embed = disnake.Embed(title = "Tic-Tac-Toe results", color = 0x00fffb)
             board = ''
             for row in range(3):
                 for column in range(3):
@@ -237,22 +237,22 @@ class games(commands.Cog):
             embed.set_footer(text = "Tic-Tac-Toe results • Bot made by 3_n#7069")
             await ctx.send(embed = embed)
         except asyncio.TimeoutError:
-            embed=discord.Embed(title="Tic-Tac-Toe results", color=0xffff00)
+            embed=disnake.Embed(title="Tic-Tac-Toe results", color=0xffff00)
             embed.add_field(name="Terminated", value="The game is terminated due to inactivity.", inline=False)
             embed.set_footer(text="Tic-Tac-Toe • Bot made by 3_n#7069 • results")
             await ctx.send(embed = embed)
         except IOError:
-            embed=discord.Embed(title="Tic-Tac-Toe results", color=0xffff00)
+            embed=disnake.Embed(title="Tic-Tac-Toe results", color=0xffff00)
             embed.add_field(name="Terminated", value="The game is terminated due to manual termination.", inline=False)
             embed.set_footer(text="Tic-Tac-Toe • Bot made by 3_n#7069 • results")
             await ctx.send(embed = embed)
         except noFriendsDetected:
-            embed=discord.Embed(title="Error: No friends detected", color=0xff0000)
+            embed=disnake.Embed(title="Error: No friends detected", color=0xff0000)
             embed.add_field(name="You are trying to play tic-tac-toe with yourself?", value="You should find someone to play with. :)", inline=False)
             embed.set_footer(text="Bot made by 3_n#7069")
             await ctx.send(embed = embed)
         except botDetected:
-            embed=discord.Embed(title="Error: Bot detected", color=0xff0000)
+            embed=disnake.Embed(title="Error: Bot detected", color=0xff0000)
             embed.add_field(name="You are trying to play tic-tac-toe with a bot?", value="Bots might not be clever enough to play the game. Find a real person!", inline=False)
             embed.set_footer(text="Bot made by 3_n#7069")
             await ctx.send(embed = embed)

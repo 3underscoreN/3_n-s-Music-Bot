@@ -1,5 +1,5 @@
-import discord
-from discord.ext import commands
+import disnake
+from disnake.ext import commands
 import pafy
 import asyncio
 from urllib.parse import urlparse
@@ -45,7 +45,7 @@ class music(commands.Cog):
           vc = ctx.voice_client
           info = pafy.new(url)
           filename = info.getbestaudio().url
-          source = discord.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
+          source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
           vc.play(source = source, after = lambda e: self.playnext(ctx))
         except:
           pass
@@ -105,7 +105,7 @@ class music(commands.Cog):
               vc = ctx.voice_client
               info = pafy.new(videourl)
               filename = info.getbestaudio().url
-              source = discord.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
+              source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
               vc.play(source = source, after = lambda e: self.playnext(ctx))
               playList.append(videourl)
               playTitle.append(info.title)
@@ -131,7 +131,7 @@ class music(commands.Cog):
     @play.error
     async def play_error(self, ctx, error):
       if isinstance(error.__cause__, urlInvalid):
-        embed=discord.Embed(title="Error: Invalid URL", color=0xff0000)
+        embed=disnake.Embed(title="Error: Invalid URL", color=0xff0000)
         embed.add_field(name="It seems like the URL is invalid", value="This bot fetches information via the 11-character video ID (should be in your URL in a format of `?watch=<11-character ID>`). Please check if it is present in your URL. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
@@ -157,7 +157,7 @@ class music(commands.Cog):
     @commands.command(aliases = ["q", "list", "ls"])
     @commands.guild_only()
     async def queue(self,ctx):
-      embed = discord.Embed(color=0x11f1f5)
+      embed = disnake.Embed(color=0x11f1f5)
       if len(playList) > 1:
         for i in range(1, len(playList)):
           embed.add_field(name="{0}: {1}".format(i, playTitle[i]), value="Added by: {0}\nDuration: [{1}:{2:02d}]".format(playUser[i], playTime[i]//60, playTime[i] % 60), inline=False)
@@ -171,7 +171,7 @@ class music(commands.Cog):
     @commands.guild_only()
     async def nowplaying(self,ctx):
       try:
-        embed = discord.Embed(title="**Now playing: **", color=0x11f1f5)
+        embed = disnake.Embed(title="**Now playing: **", color=0x11f1f5)
         info = pafy.new(playList[0])
         embed.set_thumbnail(url=info.thumb)
         embed.add_field(name="{0}".format(playTitle[0], playList[0]), value="([Play on YouTube]({3}))\nAdded by {0}\nDuration: [{1}:{2:02d}]".format(playUser[0] ,playTime[0]//60 ,playTime[0] % 60, playList[0]), inline=False)
