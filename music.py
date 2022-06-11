@@ -21,8 +21,8 @@ class urlInvalid(Exception):
 class music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    def playnext(self, ctx):
+        
+    async def playnext(self, ctx):
       global playList
       global playTitle
       global playUser

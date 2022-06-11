@@ -15,7 +15,9 @@ cogs = [music, games]
 myid = int(os.getenv('OWNER'))
 bot = commands.Bot(
     command_prefix='k!', 
-    intents = intents
+    intents = intents,
+    test_guilds = [836604118059319367, 980089284725964830],
+    sync_commmands_debug = True
 )
 bot.remove_command('help')
 directory = os.getcwd()
@@ -24,7 +26,8 @@ helpText = json.loads(open(f"{directory}/commands/helpText.json").read())
 COMMANDS_MUSIC = json.loads(open(f"{directory}/commands/commands_music.json").read())
 COMMANDS_GAMES = json.loads(open(f"{directory}/commands/commands_games.json").read())
 
-COMMANDS = [*COMMANDS_MUSIC, *COMMANDS_GAMES]
+COMMANDS = [*COMMANDS_MUSIC, *COMMANDS_GAMES, "help", "shutdown", "about"]
+comm = commands.option_enum([*COMMANDS])
 comString_music = ''
 comString_games = ''
 comString_other = "help \n ping \n shutdown \n about"
@@ -51,42 +54,66 @@ async def shutdown(ctx):
     else:
         raise commands.NotOwner()
 
-@bot.command()
-async def ping(ctx):
+#ping
+async def _ping():
     embed = disnake.Embed()
     embed = disnake.Embed()
     embed.add_field(name="Pong!", value=f"`{round(bot.latency * 1000, 1)}ms`", inline=False)
-    await ctx.send(embed=embed)
+    return embed
 
 @bot.command()
-async def help(ctx, command = None):
+async def ping(ctx):
+    embed = await _ping()
+    await ctx.send(embed = embed)
+
+@bot.slash_command(description = "Gets bot latency.")
+async def ping(inter):
+    embed = await _ping()
+    await inter.response.send_message(embed = embed)
+
+async def _help(command = None):
     global comString
-    if command == None:
+    if command == None or command == "None":
         embed = disnake.Embed(title="**Help Panel**", description="Here is a list of commands the bot has!\n\nUse `k!help [command]` to get detailed info about a specific command.", color = 0x11f1f5)
         embed.add_field(name="Music-related", value=comString_music, inline=True)
         embed.add_field(name="Games", value = comString_games, inline = True)
         embed.add_field(name="Others", value=comString_other, inline=True)
         embed.set_footer(text="Bot made by 3_n#7069")
-        await ctx.send(embed=embed)
+        return embed
     else:
         try:
-            i = 0
-            embed = disnake.Embed(title="**Help Panel**", describtion = "{0}".format(command), color=0x11f1f5)
+            embed = disnake.Embed(title="**Help Panel**", description = "{0}".format(command), color=0x11f1f5)
             commandDetails = helpText[command]
             commandHeading = ["Attributes", "Aliases", "Description", "Examples"]
-            inlineBool = (i % 2 == 0)
             for i in range(4):
-                embed.add_field(name = f"{commandHeading[i]}", value = f"{commandDetails[i]}", inline = not inlineBool)
-            await ctx.send(embed = embed)
+                embed.add_field(name = f"{commandHeading[i]}", value = f"{commandDetails[i]}", inline = False)
+            return embed
         except:
             potentialCommand = get_close_matches(command, COMMANDS)
             potential = ""
             for i in potentialCommand:
                 potential += (i + ", ")
             if potential != "":
-                await ctx.send(f"Command not found. Did you mean: `{potential[:-2]}`? Check for all commands with `k!help`.")
+                return f"Command not found. Did you mean: `{potential[:-2]}`? Check for all commands with `k!help`."
             else:
-                await ctx.send("Command not found. Check for all commands with `k!help`.")
+                return "Command not found. Check for all commands with `k!help`."
+
+@bot.slash_command(description = "Displays all commands available or displays detailed information about a command if one is passed.")
+async def help(inter, command:comm = None):
+    msg = await _help(command.strip())
+    if type(msg) == str:
+        await inter.response.send_message(msg)
+    else:
+        await inter.response.send_message(embed = msg)
+
+@bot.command()
+async def help(ctx, command = None):
+    msg = await _help(command.strip())
+    if type(msg) == str:
+        await ctx.send(msg)
+    else:
+        await ctx.send(embed = msg)
+
 
 @bot.command(aliases = ["abt"])
 async def about(ctx):
