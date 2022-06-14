@@ -22,7 +22,7 @@ class music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-    async def playnext(self, ctx):
+    def playnext(self, ctx):
       global playList
       global playTitle
       global playUser
@@ -36,10 +36,10 @@ class music(commands.Cog):
         playTime = []
       else:
         try: 
-          playList.pop(0)
-          playTitle.pop(0)
-          playUser.pop(0)
-          playTime.pop(0)
+          del playList[0]
+          del playTitle[0]
+          del playUser[0]
+          del playTime[0]
           url = playList[0]
           ctx.voice_client.stop()
           vc = ctx.voice_client
@@ -79,10 +79,10 @@ class music(commands.Cog):
         global playUser
         global playTime
         await ctx.voice_client.disconnect()
-        playList = []
-        playTitle = []
-        playUser = []
-        playTime = []
+        playList.clear()
+        playTitle.clear()
+        playUser.clear()
+        playTime.clear()
         await ctx.send("Voice channel left and queue is emptied.")
 
     @commands.command(aliases = ["p"])
@@ -111,11 +111,11 @@ class music(commands.Cog):
               playTitle.append(info.title)
               playTime.append(info.length)
               playUser.append(ctx.author.name)
-              await asyncio.sleep(1)
+              await asyncio.sleep(0.5)
               await ctx.send(f"Playing **{info.title}** now.")
-              #print(playTitle[0])
-              #print(playTime[0])
-              #print(playUser[0])
+              # print(playTitle[0])
+              # print(playTime[0])
+              # print(playUser[0])
             else:
               playList.append(videourl)
               info = pafy.new(videourl)
@@ -124,7 +124,7 @@ class music(commands.Cog):
               playUser.append(ctx.author.name)
               await ctx.send(f"**{info.title}** added to playlist!")
           except ValueError:
-            raise urlInvalid(url)
+              raise urlInvalid(url)
         else:
           await ctx.send("Please be in a voice channel first!")
 
