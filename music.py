@@ -100,7 +100,7 @@ class music(commands.Cog):
           global FFMPEG_OPTS
           channel = ctx.channel
           try:
-            if playList == []:
+            if playList == []: # No song is playing in vc
               ctx.voice_client.stop()
               vc = ctx.voice_client
               info = pafy.new(videourl)
@@ -116,13 +116,14 @@ class music(commands.Cog):
               # print(playTitle[0])
               # print(playTime[0])
               # print(playUser[0])
-            else:
+            else: #add song to queue as there's a song playing in vc
               playList.append(videourl)
-              info = pafy.new(videourl)
-              playTitle.append(info.title)
+              info = pafy.new(videourl) #only to fetch video title, thumbnail etc.
+              title = info.title
+              playTitle.append(title)
               playTime.append(info.length)
               playUser.append(ctx.author.name)
-              await ctx.send(f"**{info.title}** added to playlist!")
+              await ctx.send(f"**{title}** added to playlist!")
           except ValueError:
               raise urlInvalid(url)
         else:
@@ -157,10 +158,10 @@ class music(commands.Cog):
     @commands.command(aliases = ["q", "list", "ls"])
     @commands.guild_only()
     async def queue(self,ctx):
-      embed = disnake.Embed(color=0x11f1f5)
+      embed = disnake.Embed(color=0x11f1f5, title = "Song Queue: ")
       if len(playList) > 1:
         for i in range(1, len(playList)):
-          embed.add_field(name="{0}: {1}".format(i, playTitle[i]), value="Added by: {0}\nDuration: [{1}:{2:02d}]".format(playUser[i], playTime[i]//60, playTime[i] % 60), inline=False)
+          embed.add_field(name="{0}: {1}".format(i, playTitle[i]), value="Added by: {0}\nDuration: [{1}:{2:02d}]\n[(Click here to open on YouTube)]({3})".format(playUser[i], playTime[i]//60, playTime[i] % 60, playList[i]), inline=False)
         TotalPlayTime = sum(playTime) - playTime[0]
         embed.set_footer(text="Song Queue • Total Duration: {0}:{1:02d} • Bot made by 3_n#7069".format(TotalPlayTime//60,TotalPlayTime%60))
         await ctx.send(embed=embed)

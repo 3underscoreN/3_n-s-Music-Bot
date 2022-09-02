@@ -259,3 +259,6 @@ class games(commands.Cog):
        
 def setup(bot):
     bot.add_cog(games(bot))
+
+if __name__ == "__main__":
+    print("This is not the main script! Run main.py")

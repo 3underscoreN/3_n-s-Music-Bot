@@ -55,24 +55,15 @@ async def shutdown(ctx):
         raise commands.NotOwner()
 
 #ping
-async def _ping():
+@bot.command()
+async def ping(ctx):
     embed = disnake.Embed()
     embed = disnake.Embed()
     embed.add_field(name="Pong!", value=f"`{round(bot.latency * 1000, 1)}ms`", inline=False)
-    return embed
-
-@bot.command()
-async def ping(ctx):
-    embed = await _ping()
     await ctx.send(embed = embed)
 
-@bot.slash_command(description = "Gets bot latency.")
-async def ping(inter):
-    embed = await _ping()
-    await inter.response.send_message(embed = embed)
-
-#help
-async def _help(command = None):
+@bot.command()
+async def help(ctx, command = None):
     global comString
     if command == None or command == "None":
         embed = disnake.Embed(title="**Help Panel**", description="Here is a list of commands the bot has!\n\nUse `k!help [command]` to get detailed info about a specific command.", color = 0x11f1f5)
@@ -80,7 +71,7 @@ async def _help(command = None):
         embed.add_field(name="Games", value = comString_games, inline = True)
         embed.add_field(name="Others", value=comString_other, inline=True)
         embed.set_footer(text="Bot made by 3_n#7069")
-        return embed
+        await ctx.send(embed = embed)
     else:
         try:
             embed = disnake.Embed(title="**Help Panel**", description = "{0}".format(command), color=0x11f1f5)
@@ -88,51 +79,26 @@ async def _help(command = None):
             commandHeading = ["Attributes", "Aliases", "Description", "Examples"]
             for i in range(4):
                 embed.add_field(name = f"{commandHeading[i]}", value = f"{commandDetails[i]}", inline = False)
-            return embed
+            await ctx.send(embed = embed)
         except:
             potentialCommand = get_close_matches(command, COMMANDS)
             potential = ""
             for i in potentialCommand:
                 potential += f"{i}, "
             if potential != "":
-                return f"Command not found. Did you mean: `{potential[:-2]}`? Check for all commands with `k!help`."
+                await ctx.send(f"Command not found. Did you mean: `{potential[:-2]}`? Check for all commands with `k!help`.")
             else:
-                return "Command not found. Check for all commands with `k!help`."
-
-@bot.slash_command(description = "Displays all commands available or displays detailed information about a command if one is passed.")
-async def help(inter, command:comm = None):
-    msg = await _help(command.strip())
-    if type(msg) == str:
-        await inter.response.send_message(msg)
-    else:
-        await inter.response.send_message(embed = msg)
-
-@bot.command()
-async def help(ctx, command = None):
-    msg = await _help(command.strip())
-    if type(msg) == str:
-        await ctx.send(msg)
-    else:
-        await ctx.send(embed = msg)
+                await ctx.send("Command not found. Check for all commands with `k!help`.")
 
 #about
-async def _about():
+@bot.command(aliases = ["abt"])
+async def about(ctx):
     embed=disnake.Embed(title="About Page", description="MusicBot written by 3_n with ❤️", color=0x00f552)
     embed.set_thumbnail(url="https://i.ibb.co/kMqz961/ralsei.jpg")
     embed.add_field(name="Special Thanks", value="Alex\nLeo\nSummer\nEugene\n - for helping me test the bot and brainstorm ideas\n\nなみ\n - for giving me motivation and support and being the best, most considerate girlfriend I could ever ask for\n", inline=False)
     embed.add_field(name="Issues & Suggestions", value="Please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
     embed.set_footer(text="Bot made by 3_n#7069")
-    return embed
-
-@bot.command(aliases = ["abt"])
-async def about(ctx):
-    embed = await _about()
     await ctx.send(embed = embed)
-
-@bot.slash_command(description = "Displays information about the bot, including special thanks & support information.")
-async def about(inter):
-    embed = await _about()
-    await inter.response.send_message(embed = embed)
 
 @bot.event
 async def on_command_error(ctx, error):
