@@ -132,7 +132,7 @@ class music(commands.Cog):
               playUser.append(ctx.author.name)
               await asyncio.sleep(0.5)
               embed = disnake.Embed(title = "Success", color = 0x00ff00)
-              embed.add_field(name = f"**{info.title}** has been added into the playlist.", value = "It will be played instantly.")
+              embed.add_field(name = f'"{info.title}" has been added into the playlist.', value = "It will be played instantly.")
               embed.set_footer(text = "Play • Bot made by 3_n#7069")
               await ctx.send(embed = embed)
               # print(playTitle[0])
@@ -146,7 +146,7 @@ class music(commands.Cog):
               playTime.append(info.length)
               playUser.append(ctx.author.name)
               embed = disnake.Embed(title = "Success", color = 0x00ff00)
-              embed.add_field(name = f"**{title}** has been added into the playlist.", value = f"It is currently in queue with a positon of {len(playTitle)}.\nYou can check the whole queue with command `k!queue`.")
+              embed.add_field(name = f'"**{title}**" has been added into the playlist.', value = f"It is currently in queue with a positon of {len(playTitle) - 1}.\nYou can check the whole queue with command `k!queue`.")
               embed.set_footer(text = "Play • Bot made by 3_n#7069")
               await ctx.send(embed = embed)
           except ValueError:
