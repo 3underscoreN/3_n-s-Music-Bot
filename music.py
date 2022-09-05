@@ -26,32 +26,32 @@ class music(commands.Cog):
         self.bot = bot
         
     def playnext(self, ctx):
-      global playList
-      global playTitle
-      global playUser
-      global playTime
-      global channel
-      global FFMPEG_OPTS
-      if len(playList) == 1:
-        playList = []
-        playTitle = []
-        playUser = []
-        playTime = []
-      else:
-        try: 
-          del playList[0]
-          del playTitle[0]
-          del playUser[0]
-          del playTime[0]
-          url = playList[0]
-          ctx.voice_client.stop()
-          vc = ctx.voice_client
-          info = pafy.new(url)
-          filename = info.getbestaudio().url
-          source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
-          vc.play(source = source, after = lambda e: self.playnext(ctx))
-        except:
-          pass
+        global playList
+        global playTitle
+        global playUser
+        global playTime
+        global channel
+        global FFMPEG_OPTS
+        if len(playList) == 1:
+            playList = []
+            playTitle = []
+            playUser = []
+            playTime = []
+        else:
+            try: 
+                del playList[0]
+                del playTitle[0]
+                del playUser[0]
+                del playTime[0]
+                url = playList[0]
+                ctx.voice_client.stop()
+                vc = ctx.voice_client
+                info = pafy.new(url)
+                filename = info.getbestaudio().url
+                source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
+                vc.play(source = source, after = lambda e: self.playnext(ctx))
+            except:
+                pass
 
     @commands.command(aliases = ["j"])
     @commands.guild_only()
@@ -65,14 +65,17 @@ class music(commands.Cog):
         playUser = []
         playTime = []
         channel = ctx.author.voice.channel
-        if channel is None:
-          await ctx.send("Please join a voice channel first.")
-        elif ctx.voice_client is None:
-          await channel.connect()
-          await ctx.send("Joined!")
-          ctx.voice_client.stop()
+        if ctx.voice_client is None:
+            await channel.connect()
+            embed = disnake.Embed(title = "Success", color = 0x00ff00)
+            embed.add_field(name = "The bot has joined your current voice channel", value = "You can start playing music but using the command `k!play <Youtube URL>`!")
+            embed.set_footer(text="Join • Bot made by 3_n#7069")
+            await ctx.send(embed = embed)
         else:
-            await ctx.send("The bot is in another channel right now. Use 'leave' first.")
+            embed = disnake.Embed(title = "Error: Bot in another voice channel", color = 0xff0000)
+            embed.add_field(name = "It seems like the bot is in another voice channel now.", value = "Please use `k!leave` first.\nIf you think this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
+            embed.set_footer(text = "Bot made by 3_n#7069")
+            await ctx.send(embed = embed)
             
     @commands.command(aliases = ["lv", "l", "dc", "disconnect", "stop"])
     @commands.guild_only()
@@ -86,13 +89,16 @@ class music(commands.Cog):
         playTitle.clear()
         playUser.clear()
         playTime.clear()
-        await ctx.send("Voice channel left and queue is emptied.")
+        embed = disnake.Embed(title = "Success", color = 0x00ff00)
+        embed.add_field(name = "The bot has left the voice channel.", value = "The queue is also cleared. If you want to vibe with music again, you can use `k!join`!")
+        embed.set_footer(text = "Leave • Bot made by 3_n#7069")
+        await ctx.send(embed = embed)
 
     @leave.error
     async def leave_error(self, ctx, error):
         if isinstance(error.__cause__, AttributeError):
           embed = disnake.Embed(title = "Error: Not in a Voice Channel", color = 0xff0000)
-          embed.add_field(name = "It seems like the bot is not in any voice channels.", value = "The command can only be use when the bot is in a voice channel.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot)")
+          embed.add_field(name = "It seems like the bot is not in any voice channels.", value = "The command can only be use when the bot is in a voice channel.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
           embed.set_footer(text="Bot made by 3_n#7069")
           await ctx.send(embed = embed)
           raise ExceptionResolved
@@ -125,7 +131,10 @@ class music(commands.Cog):
               playTime.append(info.length)
               playUser.append(ctx.author.name)
               await asyncio.sleep(0.5)
-              await ctx.send(f"Playing **{info.title}** now.")
+              embed = disnake.Embed(title = "Success", color = 0x00ff00)
+              embed.add_field(name = f"**{info.title}** has been added into the playlist.", value = "It will be played instantly.")
+              embed.set_footer(text = "Play • Bot made by 3_n#7069")
+              await ctx.send(embed = embed)
               # print(playTitle[0])
               # print(playTime[0])
               # print(playUser[0])
@@ -136,7 +145,10 @@ class music(commands.Cog):
               playTitle.append(title)
               playTime.append(info.length)
               playUser.append(ctx.author.name)
-              await ctx.send(f"**{title}** added to playlist!")
+              embed = disnake.Embed(title = "Success", color = 0x00ff00)
+              embed.add_field(name = f"**{title}** has been added into the playlist.", value = f"It is currently in queue with a positon of {len(playTitle)}.\nYou can check the whole queue with command `k!queue`.")
+              embed.set_footer(text = "Play • Bot made by 3_n#7069")
+              await ctx.send(embed = embed)
           except ValueError:
               raise urlInvalid(url)
         else:
