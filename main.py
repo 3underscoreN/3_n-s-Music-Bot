@@ -67,7 +67,7 @@ async def help(ctx, command = None):
     global comString
     if command == None or command == "None":
         embed = disnake.Embed(title="**Help Panel**", description="Here is a list of commands the bot has!\n\nUse `k!help [command]` to get detailed info about a specific command.", color = 0x11f1f5)
-        embed.add_field(name="Music-related", value=comString_music, inline=True)
+        embed.add_field(name="Music", value=comString_music, inline=True)
         embed.add_field(name="Games", value = comString_games, inline = True)
         embed.add_field(name="Others", value=comString_other, inline=True)
         embed.set_footer(text="Bot made by 3_n#7069")
@@ -93,13 +93,14 @@ async def help(ctx, command = None):
 #about
 @bot.command(aliases = ["abt"])
 async def about(ctx):
-    embed=disnake.Embed(title="About Page", description="MusicBot written by 3_n with ❤️", color=0x00f552)
+    embed = disnake.Embed(title="About Page", description="MusicBot written by 3_n with ❤️", color=0x00f552)
     embed.set_thumbnail(url="https://i.ibb.co/kMqz961/ralsei.jpg")
-    embed.add_field(name="Special Thanks", value="Alex\nLeo\nSummer\nEugene\n - for helping me test the bot and brainstorm ideas\n\nなみ\n - for giving me motivation and support and being the best, most considerate girlfriend I could ever ask for\n", inline=False)
+    embed.add_field(name="Special Thanks", value="Alex (Alice the horny), Leo, Summer (我就是遜啦),\nEugene (Paramount but not)\n - for helping me test the bot and brainstorming ideas\n\n", inline=False)
     embed.add_field(name="Issues & Suggestions", value="Please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
     embed.set_footer(text="Bot made by 3_n#7069")
     await ctx.send(embed = embed)
 
+#Error handling
 @bot.event
 async def on_command_error(ctx, error):
     errorID = ''
@@ -133,18 +134,19 @@ async def on_command_error(ctx, error):
         embed.add_field(name="This command can't run in direct message.", value="Please run the command in a server text channel. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
+    elif isinstance(error, music.ExceptionResolved):
+        return
     else:
         if isinstance(error, commands.CommandInvokeError):
+            k = 0
+            print("Error ID creation start:")
+            for k in range(6):
+                errorID += str(random.choice(range(10)))
+            embed=disnake.Embed(title="Error: Unexpected error", color=0xff0000)
+            embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
+            await ctx.send(embed=embed)
+            print(f'Exception raised with ID {errorID}:')
             raise error
-            return
-        k = 0
-        for k in range(6):
-            errorID += str(random.choice(range(10)))
-        embed=disnake.Embed(title="Error: Unexpected error", color=0xff0000)
-        embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
-        await ctx.send(embed=embed)
-        print(f'Exception raised with ID {errorID}:')
-        raise error
 
 if __name__ == "__main__":
     bot.run(os.getenv('TOKEN'))

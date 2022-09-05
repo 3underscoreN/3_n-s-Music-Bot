@@ -18,6 +18,9 @@ class urlInvalid(Exception):
     def __init__(self, url):
         self.url = url
 
+class ExceptionResolved(Exception):
+    pass
+
 class music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -85,6 +88,16 @@ class music(commands.Cog):
         playTime.clear()
         await ctx.send("Voice channel left and queue is emptied.")
 
+    @leave.error
+    async def leave_error(self, ctx, error):
+        if isinstance(error.__cause__, AttributeError):
+          embed = disnake.Embed(title = "Error: Not in a Voice Channel", color = 0xff0000)
+          embed.add_field(name = "It seems like the bot is not in any voice channels.", value = "The command can only be use when the bot is in a voice channel.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot)")
+          embed.set_footer(text="Bot made by 3_n#7069")
+          await ctx.send(embed = embed)
+          raise ExceptionResolved
+
+
     @commands.command(aliases = ["p"])
     @commands.guild_only()
     async def play(self,ctx,url):
@@ -136,6 +149,7 @@ class music(commands.Cog):
         embed.add_field(name="It seems like the URL is invalid", value="This bot fetches information via the 11-character video ID (should be in your URL in a format of `?watch=<11-character ID>`). Please check if it is present in your URL. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
+        raise ExceptionResolved
       
     @commands.command()
     @commands.guild_only()
@@ -183,3 +197,6 @@ class music(commands.Cog):
 
 def setup(bot):
     bot.add_cog(music(bot))
+
+if __name__ == "__main__":
+    print("This is not the main script! Run main.py")
