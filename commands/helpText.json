@@ -1,7 +1,7 @@
 {
     "join":["`k!join`", "j", "Joins the voice channel you are currently in.", "`k!join`\n`k!j`"],
     "leave":["`k!leave`", "lv, l, dc, disconnect, stop", "Leaves the voice channel and emptys the queue.", "`k!leave`\n`k!disconnect`"],
-    "play":["`k!play <Youtube URL>`", "p", "Plays the specified URL.\n**Note: If playlist URLs are used, only the target song will be added to the playlist.**", "`k!play https://www.youtube.com/watch?v=dQw4w9WgXcQ`\n `k!p https://youtu.be/dQw4w9WgXcQ`"],
+    "play":["`k!play <Youtube URL / keywords>`", "p", "Plays the specified URL.\nIf the bot fails to play from the link, the bot will search YouTube for results.\n**Note: If playlist URLs are used, only the target song will be added to the playlist.**", "`k!play https://www.youtube.com/watch?v=dQw4w9WgXcQ`\n`k!p https://youtu.be/dQw4w9WgXcQ`\n`k!p rickroll`"],
     "pause":["`k!pause`", "None", "Pauses the song the bot is currently playing.", "`k!pause`"],
     "resume":["`k!resume`", "None", "Resumes the song if the song is paused.", "`k!resume`"],
     "skip":["`k!skip`", "None", "Skips the song the bot is currently playing and plays the next song in the queue.", "`k!skip`"],
