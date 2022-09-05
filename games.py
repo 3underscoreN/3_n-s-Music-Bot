@@ -207,7 +207,7 @@ class games(commands.Cog):
                                 raise Exception
                         except:
                             embed=disnake.Embed(title="Error occured while processing your input.", color=0xff0000)
-                            embed.add_field(name="Please check that the number you entered is an integer between 1 and 9", value="If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
+                            embed.add_field(name="Please check that the number you entered is an integer between 1 and 9", value="However, the game is still active, meaning that you can still type 1-9 to put your circle/cross in the field.\nIf you want to quit, please type `exit` without any prefixes.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
                             embed.set_footer(text="Tic-Tac-Toe • Bot made by 3_n#7069")
                             await ctx.send(embed = embed)
                     currentPlayer = TicTacToe.entry(rawInput[0], rawInput[1], currentPlayer)

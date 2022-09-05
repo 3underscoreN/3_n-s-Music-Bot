@@ -48,18 +48,19 @@ async def on_ready():
 @bot.command()
 async def shutdown(ctx):
     if ctx.message.author.id == myid:
-        await ctx.send("Shutting down... Check console!")
+        embed = disnake.Embed(title = "Success", color = 0x00ff00)
+        embed.add_field(name = "Bot shutting down...", value = "Check terminal log!")
+        embed.set_footer(text = "Shutdown • Bot made by 3_n#7069")
         await bot.close()
-        print("Logged out!")
     else:
         raise commands.NotOwner()
 
 #ping
 @bot.command()
 async def ping(ctx):
-    embed = disnake.Embed()
-    embed = disnake.Embed()
-    embed.add_field(name="Pong!", value=f"`{round(bot.latency * 1000, 1)}ms`", inline=False)
+    embed = disnake.Embed(title = "Pong!", color = 0x11f1f5)
+    embed.add_field(name=f"The bot's latency is `{round(bot.latency * 1000, 1)}ms`", value = "If there's a noticable delay in command processing, the bot might have an internal error.\nPlease get in touch with 3_n#7069 if that happens.", inline=False)
+    embed.set_footer(text = "Ping • Bot made by 3_n#7069")
     await ctx.send(embed = embed)
 
 @bot.command()
@@ -67,9 +68,9 @@ async def help(ctx, command = None):
     global comString
     if command == None or command == "None":
         embed = disnake.Embed(title="**Help Panel**", description="Here is a list of commands the bot has!\n\nUse `k!help [command]` to get detailed info about a specific command.", color = 0x11f1f5)
-        embed.add_field(name="Music", value=comString_music, inline=True)
+        embed.add_field(name="Music", value = comString_music, inline=True)
         embed.add_field(name="Games", value = comString_games, inline = True)
-        embed.add_field(name="Others", value=comString_other, inline=True)
+        embed.add_field(name="Others", value = comString_other, inline=True)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed = embed)
     else:
@@ -86,9 +87,15 @@ async def help(ctx, command = None):
             for i in potentialCommand:
                 potential += f"{i}, "
             if potential != "":
-                await ctx.send(f"Command not found. Did you mean: `{potential[:-2]}`? Check for all commands with `k!help`.")
+                embed = disnake.Embed(title = "Error: Command not found", color = 0xff0000)
+                embed.add_field(name = f"The command you entered is not found.", value = f"Do you mean: `{potential[:-2]}`?\nCheck all commands available with `k!help`.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
+                embed.set_footer(text = "Bot made by 3_n#7069")
+                await ctx.send(embed = embed)
             else:
-                await ctx.send("Command not found. Check for all commands with `k!help`.")
+                embed = disnake.Embed(title = "Error: Command not found", color = 0xff0000)
+                embed.add_field(name = "The command you entered is not found.", value = "Check all commands available with `k!help`.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
+                embed.set_footer(text = "Bot made by 3_n#7069")
+                await ctx.send(embed = embed)
 
 #about
 @bot.command(aliases = ["abt"])
