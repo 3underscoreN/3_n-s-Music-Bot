@@ -78,7 +78,16 @@ class music(commands.Cog):
             embed.add_field(name = "It seems like the bot is in another voice channel now.", value = "Please use `k!leave` first.\nIf you think this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
             embed.set_footer(text = "Bot made by 3_n#7069")
             await ctx.send(embed = embed)
-            
+
+    @join.error
+    async def join_error(self, ctx, error):
+        if isinstance(error.__cause__, AttributeError):
+          embed = disnake.Embed(title = "Error: User not in voice channel", color = 0xff0000)
+          embed.add_field(name = "It seems like your are not in a voice channel.", value = "Please join a voice channel before I can blast music there.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
+          embed.set_footer(text = "Bot made by 3_n#7069")
+          await ctx.send(embed = embed)
+          raise ExceptionResolved
+
     @commands.command(aliases = ["lv", "l", "dc", "disconnect", "stop"])
     @commands.guild_only()
     async def leave(self,ctx):
@@ -116,67 +125,64 @@ class music(commands.Cog):
       global playTime
       global FFMPEG_OPTS
       searched = False
-      if not(ctx.author.voice.channel is None):
-          if ctx.voice_client is None:
-              await ctx.author.voice.channel.connect()
-          videourl = url.split('&', 1)[0]
-          channel = ctx.channel
-          if playList == []: # No song is playing in vc
-            ctx.voice_client.stop()
-            vc = ctx.voice_client
-            embed = disnake.Embed(title = "Loading...", color = 0x0000ff)
-            embed.set_footer(text = "Play • Bot made by 3_n#7069")
-            try:
-              info = pafy.new(videourl)
-              embed.add_field(name = "The bot has identified the URL.", value = "Hold on while the bot parses the URL...")
-              message = await ctx.send(embed = embed)
-            except ValueError:
-              try:
-                embed.add_field(name = "The bot is searching on YouTube", value = f"Hold on while the bot searches {videourl} on YouTube.")
-                searchResult = "https://www.youtube.com/watch?v=" + youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["id"]
-                searched = True
-                info = pafy.new(searchResult)
-                message = await ctx.send(embed = embed)
-              except:
-                raise urlInvalid(url)
-            filename = info.getbestaudio().url
-            source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
-            vc.play(source = source, after = lambda e: self.playnext(ctx))
-            playList.append(info.watchv_url)
-            playTitle.append(info.title)
-            playTime.append(info.length)
-            playUser.append(ctx.author.name)
-            await asyncio.sleep(0.25)
-            embed = disnake.Embed(title = "Success", color = 0x00ff00)
-            embed.add_field(name = f'"{info.title}" has been added into the playlist.', value = "It will be played instantly.")
-            embed.set_footer(text = "Play • Bot made by 3_n#7069")
-            await message.edit(embed = embed)
-          else: #add song to queue as there's a song playing in vc
-            embed = disnake.Embed(title = "Loading...", color = 0x0000ff)
-            embed.set_footer(text = "Play • Bot made by 3_n#7069")
-            try:
-              info = pafy.new(videourl)
-              embed.add_field(name = "The bot has identified the URL.", value = "Hold on while the bot parses the URL...")
-              message = await ctx.send(embed = embed)
-            except:
-              try:
-                embed.add_field(name = "The bot cannot identify the URL.", value = "Hold on while the bot searches YouTube for appropriate videos...")
-                searchResult = "https://www.youtube.com/watch?v=" + youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["id"]
-                info = pafy.new(searchResult)
-                message = await ctx.send(embed = embed)
-              except:
-                raise urlInvalid(url)
-            playList.append(info.watchv_url)
-            title = info.title
-            playTitle.append(title)
-            playTime.append(info.length)
-            playUser.append(ctx.author.name)
-            embed = disnake.Embed(title = "Success", color = 0x00ff00)
-            embed.add_field(name = f'"**{title}**" has been added into the playlist.', value = f"It is currently in queue with a positon of {len(playTitle) - 1}.\nYou can check the whole queue with command `k!queue`.")
-            embed.set_footer(text = "Play • Bot made by 3_n#7069")
-            await message.edit(embed = embed)
-      else:
-          await ctx.send("Please be in a voice channel first!")
+      if ctx.voice_client is None:
+          await ctx.author.voice.channel.connect()
+      videourl = url.split('&', 1)[0]
+      channel = ctx.channel
+      if playList == []: # No song is playing in vc
+        ctx.voice_client.stop()
+        vc = ctx.voice_client
+        embed = disnake.Embed(title = "Loading...", color = 0x0000ff)
+        embed.set_footer(text = "Play • Bot made by 3_n#7069")
+        try:
+          info = pafy.new(videourl)
+          embed.add_field(name = "The bot has identified the URL.", value = "Hold on while the bot parses the URL...")
+          message = await ctx.send(embed = embed)
+        except ValueError:
+          try:
+            embed.add_field(name = "The bot is searching on YouTube", value = f"Hold on while the bot searches {videourl} on YouTube.")
+            searchResult = "https://www.youtube.com/watch?v=" + youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["id"]
+            searched = True
+            info = pafy.new(searchResult)
+            message = await ctx.send(embed = embed)
+          except:
+            raise urlInvalid(url)
+        filename = info.getbestaudio().url
+        source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
+        vc.play(source = source, after = lambda e: self.playnext(ctx))
+        playList.append(info.watchv_url)
+        playTitle.append(info.title)
+        playTime.append(info.length)
+        playUser.append(ctx.author.name)
+        await asyncio.sleep(0.25)
+        embed = disnake.Embed(title = "Success", color = 0x00ff00)
+        embed.add_field(name = f'"{info.title}" has been added into the playlist.', value = "It will be played instantly.")
+        embed.set_footer(text = "Play • Bot made by 3_n#7069")
+        await message.edit(embed = embed)
+      else: #add song to queue as there's a song playing in vc
+        embed = disnake.Embed(title = "Loading...", color = 0x0000ff)
+        embed.set_footer(text = "Play • Bot made by 3_n#7069")
+        try:
+          info = pafy.new(videourl)
+          embed.add_field(name = "The bot has identified the URL.", value = "Hold on while the bot parses the URL...")
+          message = await ctx.send(embed = embed)
+        except:
+          try:
+            embed.add_field(name = "The bot cannot identify the URL.", value = "Hold on while the bot searches YouTube for appropriate videos...")
+            searchResult = "https://www.youtube.com/watch?v=" + youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["id"]
+            info = pafy.new(searchResult)
+            message = await ctx.send(embed = embed)
+          except:
+            raise urlInvalid(url)
+        playList.append(info.watchv_url)
+        title = info.title
+        playTitle.append(title)
+        playTime.append(info.length)
+        playUser.append(ctx.author.name)
+        embed = disnake.Embed(title = "Success", color = 0x00ff00)
+        embed.add_field(name = f'"**{title}**" has been added into the playlist.', value = f"It is currently in queue with a positon of {len(playTitle) - 1}.\nYou can check the whole queue with command `k!queue`.")
+        embed.set_footer(text = "Play • Bot made by 3_n#7069")
+        await message.edit(embed = embed)
 
     @play.error
     async def play_error(self, ctx, error):
@@ -186,7 +192,13 @@ class music(commands.Cog):
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
         raise ExceptionResolved
-      
+      elif isinstance(error.__cause__, AttributeError):
+        embed = disnake.Embed(title = "Error: User not in voice channel", color = 0xff0000)
+        embed.add_field(name = "It seems like your are not in a voice channel.", value = "Please join a voice channel before I can blast music there.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
+        embed.set_footer(text = "Bot made by 3_n#7069")
+        await ctx.send(embed = embed)
+        raise ExceptionResolved
+
     @commands.command()
     @commands.guild_only()
     async def pause(self,ctx):

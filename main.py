@@ -49,7 +49,7 @@ async def on_ready():
 async def shutdown(ctx):
     if ctx.message.author.id == myid:
         embed = disnake.Embed(title = "Success", color = 0x00ff00)
-        embed.add_field(name = "Bot shutting down...", value = "Check terminal log!")
+        embed.add_field(name = "Bot shutting down...", value = "Check terminal!")
         embed.set_footer(text = "Shutdown • Bot made by 3_n#7069")
         await ctx.send(embed = embed)
         await bot.close()
@@ -158,7 +158,7 @@ async def on_command_error(ctx, error):
             embed=disnake.Embed(title="Error: Unexpected error", color=0xff0000)
             embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
             await ctx.send(embed=embed)
-            print(f'Exception raised with ID {errorID}:')
+            print(f'Exception raised with ID {errorID}:', endl = '')
             raise error
 
 if __name__ == "__main__":
