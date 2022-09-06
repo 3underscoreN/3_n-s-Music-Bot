@@ -4,6 +4,7 @@ import pafy
 import asyncio
 from urllib.parse import urlparse
 import youtube_search
+from youtube_dl.utils import DownloadError
 
 FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
@@ -145,6 +146,12 @@ class music(commands.Cog):
             searched = True
             info = pafy.new(searchResult)
             message = await ctx.send(embed = embed)
+          except OSError:
+            embed = disnake.Embed(title = "Error: Unable to play video", color = 0xff0000)
+            embed.add_field(name = "The video requested cannot be played.", value = "That means the video is probably private, deleted and probably age-restricted, meaning that you can't play 夜に駆ける. :sob:\nI am trying to find a way through this.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
+            embed.set_footer(text = "Play • Bot made by 3_n#7069")
+            await ctx.send(embed = embed)
+            return
           except:
             raise urlInvalid(url)
         filename = info.getbestaudio().url
@@ -172,6 +179,12 @@ class music(commands.Cog):
             searchResult = "https://www.youtube.com/watch?v=" + youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["id"]
             info = pafy.new(searchResult)
             message = await ctx.send(embed = embed)
+          except OSError:
+            embed = disnake.Embed(title = "Error: Unable to fetch video", color = 0xff0000)
+            embed.add_field(name = "The video requested cannot be fetched.", value = "That means the video is probably private, deleted and probably age-restricted, meaning that you can't play 夜に駆ける. :sob:\nI am trying to find a way through this.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
+            embed.set_footer(text = "Play • Bot made by 3_n#7069")
+            await ctx.send(embed = embed)
+            return
           except:
             raise urlInvalid(url)
         playList.append(info.watchv_url)
