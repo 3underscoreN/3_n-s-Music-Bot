@@ -113,17 +113,22 @@ async def on_command_error(ctx, error):
     errorID = ''
     if isinstance(error, commands.CommandNotFound):
         embed=disnake.Embed(title="Error: Command not found", color=0xff0000)
-        embed.add_field(name="The command you entered does not seem to be valid.", value="Please double-check your entry. If you don't know what you are doing, you can use `k!help` for a list of commands availabe.\n\nYou can also use `k!help [command]` to find details about a specific command.", inline=False)
+        embed.add_field(name="The command you entered does not seem to be valid.", value="Please double-check your entry. If you don't know what you are doing, you can use `k!help` for a list of commands availabe.\n\nYou can also use `k!help [command]` to find details about a specific command.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
+    elif isinstance(error, commands.UserInputError):
+        embed = disnake.Embed(title = "Error: User Input Error", color = 0xff0000)
+        embed.add_field(name = "We have detected an error in your input.", value = "Please check your parameters to see if they are in the right formation or are entered correctly.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
+        embed.set_footer(text="Bot made by 3_n#7069")
+        await ctx.send(embed = embed)
     elif isinstance(error, commands.MissingRequiredArgument):
         embed=disnake.Embed(title="Error: Missing arguments", color=0xff0000)
-        embed.add_field(name="Some required arguments in your entry seems to be missing.", value="Please double-check your entry. You can use `k!help [command]` to find all the required arguments (usually bracketed by `<>`) in the command.", inline=False)
+        embed.add_field(name="Some required arguments in your entry seems to be missing.", value="Please double-check your entry. You can use `k!help [command]` to find all the required arguments (usually bracketed by `<>`) in the command.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
     elif isinstance(error, commands.TooManyArguments):
         embed=disnake.Embed(title="Error: Too many arguments", color=0xff0000)
-        embed.add_field(name="You have entered too many arguments in your command.", value="Please double-check your entry. You can use `k!help [command]` to find the arguments that are redundant in your command.", inline=False)
+        embed.add_field(name="You have entered too many arguments in your command.", value="Please double-check your entry. You can use `k!help [command]` to find the arguments that are redundant in your command.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
     elif isinstance(error, commands.NotOwner):

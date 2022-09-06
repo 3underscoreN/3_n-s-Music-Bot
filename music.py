@@ -12,6 +12,7 @@ playList = []
 playTitle = []
 playUser = []
 playTime = []
+buffer = []
 channel = ""
 # INIT END
 
@@ -143,7 +144,7 @@ class music(commands.Cog):
             playTitle.append(info.title)
             playTime.append(info.length)
             playUser.append(ctx.author.name)
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.25)
             embed = disnake.Embed(title = "Success", color = 0x00ff00)
             embed.add_field(name = f'"{info.title}" has been added into the playlist.', value = "It will be played instantly.")
             embed.set_footer(text = "Play • Bot made by 3_n#7069")
@@ -201,6 +202,60 @@ class music(commands.Cog):
     async def skip(self,ctx):
       ctx.voice_client.stop()
       await ctx.send("Skipped!")
+
+    @commands.command(aliases = ["rmall", "rma", "delall", "deleteall", "dela"])
+    @commands.guild_only()
+    async def removeall(self, ctx):
+        global playList
+        global playTitle
+        global playUser
+        global playTime
+        embed = disnake.Embed(title = "Confirmation", color = 0xff0000)
+        embed.add_field(name = "Are you sure??", value = "If you delete everything in the queue now, they cannot be added back! You will lost everything in it, ~~including one free Alex moan sound!~~\nType `yes` or `y` to confirm your choice without command prefixes. Uppercase will also work.\nThe bot will cancel the operation if no response is receiveed in 30 seconds.")
+        embed.set_footer(text = "RemoveAll • Bot made by 3_n#7069")
+        message = await ctx.send(embed = embed)
+        try: 
+          response = await self.bot.wait_for("message", check = lambda message: message.author == ctx.author, timeout = 30.0)
+          if (response.content.lower() in ["yes", "y"]):
+            del playList[1:]
+            del playTime[1:]
+            del playTitle[1:]
+            del playUser[1:]
+            embed = disnake.Embed(title = "Success", color = 0x00ff00)
+            embed.add_field(name = "All songs in the queue has been removed.", value = "Don't worry, you can always add more songs!")
+            embed.set_footer(text = "RemoveAll • Bot made by 3_n#7069")
+            await message.edit(embed = embed)
+          else:
+            embed = disnake.Embed(title = "Operation Cancelled", color = 0xffff00)
+            embed.add_field(name = "No songs are deleted from the queue.", value = "As you sent something other than ""yes"" or ""y"", the operation is cancelled.")
+            embed.set_footer(text = "RemoveAll • Bot made by 3_n#7069")
+            await message.edit(embed = embed)
+        except asyncio.TimeoutError:
+          embed = disnake.Embed(title = "Operation Cancelled", color = 0xffff00)
+          embed.add_field(name = "No songs are deleted from the queue.", value = "As you did not send anything within 30 seconds, the operation is automatically cancelled.")
+          embed.set_footer(text = "RemoveAll • Bot made by 3_n#7069")
+          await message.edit(embed = embed)
+
+    @commands.command(aliases = ["rm", "del", "delete"])
+    @commands.guild_only()
+    async def remove(self, ctx, index):
+      try:
+        intindex = int(index)
+      except:
+        raise commands.UserInputError
+      global playList
+      global playTime
+      global playTitle
+      global playUser
+      global buffer
+      del playList[intindex]
+      del playTime[intindex]
+      del playTitle[intindex]
+      del playUser[intindex]
+      embed = disnake.Embed(title = "Success", color = 0x00ff00)
+      embed.add_field(name = "The song has been removed.", value = "Don't worry, you can always add more songs!")
+      embed.set_footer(text = "Remove • Bot made by 3_n#7069")
+      await ctx.send(embed = embed)
 
     @commands.command(aliases = ["q", "list", "ls"])
     @commands.guild_only()
