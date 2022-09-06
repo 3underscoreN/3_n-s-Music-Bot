@@ -12,5 +12,7 @@
     "wordle":["`k!wordle`", "None", "Plays a game of wordle.\nIf you want to know the rules: https://en.wikipedia.org/wiki/Wordle", "`k!wordle`"],
     "about":["`k!about`", "None", "Displays information about the bot, including special thanks & support information.", "`k!about`"],
     "tictactoe":["`k!tictactoe <Ping your friend>`","ttt", "Plays a game that always draws with your friend.", "`k!tictactoe @Alice the e girl`\n`k!ttt @Alice the e girl`"],
-    "ping":["`k!ping`", "None", "Gets bot latency.", "`k!ping`"]
+    "ping":["`k!ping`", "None", "Gets bot latency.", "`k!ping`"],
+    "remove":["`k!remove <Position in queue>`", "rm, del, delete", "Deletes a specified song in the queue.", "`k!remove 2`\n`k!rm 3`"],
+    "removeall": ["`k!removeall`", "rma, rmall, dela, deall, deleteall", "Deletes **EVERYTHING** in the queue.", "`k!removeall`\n`k!dela`"]
 }

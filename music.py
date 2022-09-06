@@ -115,6 +115,7 @@ class music(commands.Cog):
       global playUser
       global playTime
       global FFMPEG_OPTS
+      searched = False
       if not(ctx.author.voice.channel is None):
           if ctx.voice_client is None:
               await ctx.author.voice.channel.connect()
@@ -129,10 +130,11 @@ class music(commands.Cog):
               info = pafy.new(videourl)
               embed.add_field(name = "The bot has identified the URL.", value = "Hold on while the bot parses the URL...")
               message = await ctx.send(embed = embed)
-            except:
+            except ValueError:
               try:
-                embed.add_field(name = "The bot cannot identify the URL.", value = "Hold on while the bot searches YouTube for appropriate videos...")
+                embed.add_field(name = "The bot is searching on YouTube", value = f"Hold on while the bot searches {videourl} on YouTube.")
                 searchResult = "https://www.youtube.com/watch?v=" + youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["id"]
+                searched = True
                 info = pafy.new(searchResult)
                 message = await ctx.send(embed = embed)
               except:
@@ -140,7 +142,7 @@ class music(commands.Cog):
             filename = info.getbestaudio().url
             source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
             vc.play(source = source, after = lambda e: self.playnext(ctx))
-            playList.append(videourl)
+            playList.append(info.watchv_url)
             playTitle.append(info.title)
             playTime.append(info.length)
             playUser.append(ctx.author.name)
@@ -188,20 +190,32 @@ class music(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def pause(self,ctx):
+      embed = disnake.Embed(title = "Success", color = 0x00ff00)
+      embed.add_field(name = "The song has been paused", value = "You can resume playing with `k!resume`.")
+      embed.set_footer(text = "Pause • Bot made by 3_n#7069")
       ctx.voice_client.pause()
-      await ctx.send("Paused!")
+      await ctx.send(embed = embed)
 
     @commands.command()
     @commands.guild_only()
     async def resume(self,ctx):
+      embed = disnake.Embed(title = "Success", color = 0x00ff00)
+      embed.add_field(name = "The song has been resumed.", value = "You can pause playing with `k!pause`, or skip the song with `k!skip`.")
+      embed.set_footer(text = "Resume • Bot made by 3_n#7069")
       ctx.voice_client.resume()
-      await ctx.send("Resumed!")
+      await ctx.send(embed = embed)
 
     @commands.command()
     @commands.guild_only()
     async def skip(self,ctx):
+      embed = disnake.Embed(title = "Success", color = 0x00ff00)
+      if len(playTitle) > 1:
+        embed.add_field(name = "Current playing song has been skipped.", value = f'The next song in queue, "**{playTitle[1]}**" will start playing now.')
+      else:
+        embed.add_field(name = "Current playing songs has been skipped.", value = "There are no other songs in queue now. Playing will be stopped now.")
+      embed.set_footer(text = "Pause • Bot made by 3_n#7069")
       ctx.voice_client.stop()
-      await ctx.send("Skipped!")
+      await ctx.send(embed = embed)
 
     @commands.command(aliases = ["rmall", "rma", "delall", "deleteall", "dela"])
     @commands.guild_only()
@@ -241,6 +255,8 @@ class music(commands.Cog):
     async def remove(self, ctx, index):
       try:
         intindex = int(index)
+        if intindex == 0:
+          raise Exception
       except:
         raise commands.UserInputError
       global playList
@@ -268,7 +284,10 @@ class music(commands.Cog):
         embed.set_footer(text="Song Queue • Total Duration: {0}:{1:02d} • Bot made by 3_n#7069".format(TotalPlayTime//60,TotalPlayTime%60))
         await ctx.send(embed=embed)
       else:
-        await ctx.send("There are no songs in the queue.")
+        embed = disnake.Embed(title = "Error: No songs in queue", color = 0xff0000)
+        embed.add_field(name = "There are no songs in the queue.", value = "However you can add songs with `k!play <YouTube URL/keyword>`!")
+        embed.set_footer(text = "Queue • Bot made by 3_n")
+        await ctx.send(embed = embed)
 
     @commands.command(aliases = ["np"])
     @commands.guild_only()
@@ -281,7 +300,10 @@ class music(commands.Cog):
         embed.set_footer(text="Now playing • Bot made by 3_n#7069")
         await ctx.send(embed = embed)
       except(IndexError):
-        await ctx.send("There are no currently playing songs.")
+        embed = disnake.Embed(title = "Error: No songs currently playing.", color = 0xff0000)
+        embed.add_field(name = "The bot is not playing any songs.", value = "However you can always start playing with `k!play <YouTube URL/Keywords>`!")
+        embed.set_footer(text = "Now playing • Bot made by 3_n#7069")
+        await ctx.send(embed = embed)
 
 def setup(bot):
     bot.add_cog(music(bot))

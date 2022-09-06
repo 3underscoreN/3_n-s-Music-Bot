@@ -51,6 +51,7 @@ async def shutdown(ctx):
         embed = disnake.Embed(title = "Success", color = 0x00ff00)
         embed.add_field(name = "Bot shutting down...", value = "Check terminal log!")
         embed.set_footer(text = "Shutdown • Bot made by 3_n#7069")
+        await ctx.send(embed = embed)
         await bot.close()
     else:
         raise commands.NotOwner()

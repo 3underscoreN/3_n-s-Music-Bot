@@ -6,5 +6,7 @@
     "resume", 
     "skip", 
     "queue", 
-    "nowplaying"
+    "nowplaying",
+    "remove",
+    "removeall"
 ]
