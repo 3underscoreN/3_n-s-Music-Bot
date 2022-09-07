@@ -27,7 +27,6 @@ COMMANDS_MUSIC = json.loads(open(f"{directory}/commands/commands_music.json").re
 COMMANDS_GAMES = json.loads(open(f"{directory}/commands/commands_games.json").read())
 
 COMMANDS = [*COMMANDS_MUSIC, *COMMANDS_GAMES, "help", "shutdown", "about"]
-comm = commands.option_enum([*COMMANDS])
 comString_music = ''
 comString_games = ''
 comString_other = "help \n ping \n shutdown \n about"
@@ -103,7 +102,7 @@ async def help(ctx, command = None):
 async def about(ctx):
     embed = disnake.Embed(title="About Page", description="MusicBot written by 3_n with ❤️", color=0x00f552)
     embed.set_thumbnail(url="https://i.ibb.co/kMqz961/ralsei.jpg")
-    embed.add_field(name="Special Thanks", value="Alex (Alice the horny), Leo, Summer (我就是遜啦),\nEugene (Paramount but not)\n - for helping me test the bot and brainstorming ideas\n\n", inline=False)
+    embed.add_field(name="Special Thanks", value="Alex (Alice the horny), Leo (can't come up with nickname for this person), Summer (我就是遜啦),\nEugene (Paramount but not)\n - for helping me test the bot and brainstorming ideas\n\n", inline=False)
     embed.add_field(name="Issues & Suggestions", value="Please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
     embed.set_footer(text="Bot made by 3_n#7069")
     await ctx.send(embed = embed)
@@ -151,14 +150,13 @@ async def on_command_error(ctx, error):
         return
     else:
         if isinstance(error, commands.CommandInvokeError):
-            k = 0
             print("Error ID creation start:")
-            for k in range(6):
+            for _ in range(6):
                 errorID += str(random.choice(range(10)))
             embed=disnake.Embed(title="Error: Unexpected error", color=0xff0000)
             embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
             await ctx.send(embed=embed)
-            print(f'Exception raised with ID {errorID}:', endl = '')
+            print(f'Exception raised with ID {errorID}:')
             raise error
 
 if __name__ == "__main__":

@@ -119,6 +119,10 @@ class music(commands.Cog):
     @commands.command(aliases = ["p"])
     @commands.guild_only()
     async def play(self,ctx,*,url):
+      embed = disnake.Embed(title = "Loading...", color = 0x0000ff)
+      embed.add_field(name = "Processing...", value = "The bot is processing your command.\nIf you are stuck in this embed, most likely the bot went into a problem and error handling didn't catch it.\nPlease open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot) if that happens.")
+      embed.set_footer(text = "Play • Bot made by 3_n#7069")
+      message = await ctx.send(embed = embed)
       global playList
       global channel
       global playTitle
@@ -138,19 +142,19 @@ class music(commands.Cog):
         try:
           info = pafy.new(videourl)
           embed.add_field(name = "The bot has identified the URL.", value = "Hold on while the bot parses the URL...")
-          message = await ctx.send(embed = embed)
+          await message.edit(embed = embed)
         except ValueError:
           try:
             embed.add_field(name = "The bot is searching on YouTube", value = f"Hold on while the bot searches {videourl} on YouTube.")
             searchResult = "https://www.youtube.com/watch?v=" + youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["id"]
             searched = True
             info = pafy.new(searchResult)
-            message = await ctx.send(embed = embed)
+            await message.edit(embed = embed)
           except OSError:
             embed = disnake.Embed(title = "Error: Unable to play video", color = 0xff0000)
             embed.add_field(name = "The video requested cannot be played.", value = "That means the video is probably private, deleted and probably age-restricted, meaning that you can't play 夜に駆ける. :sob:\nI am trying to find a way through this.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
             embed.set_footer(text = "Play • Bot made by 3_n#7069")
-            await ctx.send(embed = embed)
+            await message.edit(embed = embed)
             return
           except:
             raise urlInvalid(url)
@@ -172,18 +176,18 @@ class music(commands.Cog):
         try:
           info = pafy.new(videourl)
           embed.add_field(name = "The bot has identified the URL.", value = "Hold on while the bot parses the URL...")
-          message = await ctx.send(embed = embed)
+          await message.edit(embed = embed)
         except:
           try:
             embed.add_field(name = "The bot cannot identify the URL.", value = "Hold on while the bot searches YouTube for appropriate videos...")
             searchResult = "https://www.youtube.com/watch?v=" + youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["id"]
             info = pafy.new(searchResult)
-            message = await ctx.send(embed = embed)
+            await message.edit(embed = embed)
           except OSError:
             embed = disnake.Embed(title = "Error: Unable to fetch video", color = 0xff0000)
             embed.add_field(name = "The video requested cannot be fetched.", value = "That means the video is probably private, deleted and probably age-restricted, meaning that you can't play 夜に駆ける. :sob:\nI am trying to find a way through this.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
             embed.set_footer(text = "Play • Bot made by 3_n#7069")
-            await ctx.send(embed = embed)
+            await message.edit(embed = embed)
             return
           except:
             raise urlInvalid(url)
