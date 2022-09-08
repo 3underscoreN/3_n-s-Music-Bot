@@ -6,7 +6,7 @@ import pafy
 import asyncio
 from urllib.parse import urlparse
 import youtube_search
-from youtube_dl.utils import DownloadError
+
 
 FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
@@ -17,6 +17,13 @@ playUser = []
 playTime = []
 buffer = []
 channel = ""
+repeatMode = 0
+'''
+for repeat mode,
+0 = no repeat (normal)
+1 = single
+2 = playList
+'''
 # INIT END
 
 class urlInvalid(Exception):
@@ -31,31 +38,49 @@ class music(commands.Cog):
         self.bot = bot
         
     def playnext(self, ctx):
+        global repeatMode
         global playList
         global playTitle
         global playUser
         global playTime
         global channel
         global FFMPEG_OPTS
-        if len(playList) == 1:
-            playList = []
-            playTitle = []
-            playUser = []
-            playTime = []
-        else:
-            try: 
-                del playList[0]
-                del playTitle[0]
-                del playUser[0]
-                del playTime[0]
-                url = playList[0]
+        try:
+          if len(playList) == 1:
+              if not repeatMode in [1, 2]:
+                playList = []
+                playTitle = []
+                playUser = []
+                playTime = []
+              else:
                 ctx.voice_client.stop()
                 vc = ctx.voice_client
-                info = pafy.new(url)
+                info = pafy.new(playList[0])
                 filename = info.getbestaudio().url
                 source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
-                vc.play(source = source, after = lambda e: self.playnext(ctx))
-            except:
+                vc.play(source = source, after = lambda e:self.playnext(ctx))
+          else:
+              if repeatMode == 0:
+                  del playList[0]
+                  del playTitle[0]
+                  del playUser[0]
+                  del playTime[0]
+                  url = playList[0]
+              if repeatMode == 2:
+                  playList.append(playList.pop(0))
+                  playTitle.append(playTitle.pop(0))
+                  playUser.append(playUser.pop(0))
+                  playTime.append(playTime.pop(0))
+                  url = playList[0]
+              if repeatMode == 1:
+                  url = playList[0]
+              ctx.voice_client.stop()
+              vc = ctx.voice_client
+              info = pafy.new(url)
+              filename = info.getbestaudio().url
+              source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
+              vc.play(source = source, after = lambda e: self.playnext(ctx))
+        except:
                 pass
 
     @commands.command(aliases = ["j"])
@@ -258,10 +283,14 @@ class music(commands.Cog):
     @commands.guild_only()
     async def skip(self,ctx):
       embed = disnake.Embed(title = "Success", color = 0x00ff00)
-      if len(playTitle) > 1:
-        embed.add_field(name = "Current playing song has been skipped.", value = f'The next song in queue, "**{playTitle[1]}**" will start playing now.')
+      if len(playTitle) > 1 and repeatMode in [0, 2]:
+        embed.add_field(name = "Current song has been skipped.", value = f'The next song in queue, "**{playTitle[1]}**" will start playing now.')
+      elif repeatMode == 1:
+        embed.add_field(name = "Current song has been skipped.", value = "However, as repeat mode is single right now, the song will start playing again. There's no escape now.")
+      elif len(playTitle) == 1 and repeatMode == 2:
+        embed.add_field(name = "Current song has been skipped.", value = "However, as repeat mode is queue and there's only 1 song in the queue, the song will start playing again. There's no escape now.")
       else:
-        embed.add_field(name = "Current playing songs has been skipped.", value = "There are no other songs in queue now. Playing will be stopped now.")
+        embed.add_field(name = "Current song has been skipped.", value = "There are no other songs in queue now. Playing will be stopped now.")
       embed.set_footer(text = "Pause • Bot made by 3_n#7069")
       ctx.voice_client.stop()
       await ctx.send(embed = embed)
@@ -336,6 +365,36 @@ class music(commands.Cog):
         embed = disnake.Embed(title = "Error: No songs in queue", color = 0xff0000)
         embed.add_field(name = "There are no songs in the queue.", value = "However you can add songs with `k!play <YouTube URL/keyword>`!")
         embed.set_footer(text = "Queue • Bot made by 3_n")
+        await ctx.send(embed = embed)
+
+    @commands.command()
+    @commands.guild_only()
+    async def repeat(self, ctx, newRepeatMode = "None"):
+        global repeatMode
+        if newRepeatMode.lower() in ["0", "n", "normal", "no"]:
+            newRepeatMode = 0
+        elif newRepeatMode.lower() in ["1", "s", "single", "loop", "brainwash"]:
+            newRepeatMode = 1
+        elif newRepeatMode.lower() in ["2", "loopqueue", "queue", "list", "q", "ls"]:
+            newRepeatMode = 2
+        if newRepeatMode == "None": 
+            embed = disnake.Embed(title = "Repeat status: ", color = 0x00ff00)
+            if repeatMode == 0:
+                embed.add_field(name = "Normal", value = "This bot is not repeating any music.\nYou can change it to repeat 1 song or multiple songs by `k!repeat [single/queue]`!")
+            elif repeatMode == 1:
+                embed.add_field(name = "Single", value = "This bot is constantly repeating one single song ~~to brainwash everyone here~~.\nYou can change it to not repeat songs or repeat the queue instead by `k!repeat [normal/queue]`!")
+            elif repeatMode == 2:
+                embed.add_field(name = "Queue", value = "The bot is repeating the queue (which can be checked by entering `k!queue`, however the current song will also be included).\nYou can change it to not repeat or repeat one song only by `k!repeat[normal/single]`!")
+        elif newRepeatMode in [0, 1, 2]:
+            repeatMode = newRepeatMode
+            embed = disnake.Embed(title = "Success", color = 0x00ff00)
+            if repeatMode == 0:
+                embed.add_field(name = "Curreny Mode: Normal", value = "This bot is now not repeating any music.\nYou can change it to repeat 1 song or multiple songs by `k!repeat [single/queue]`!")
+            elif repeatMode == 1:
+                embed.add_field(name = "Current Mode: Single", value = "This bot is now constantly repeating one single song.\nYou can change it to not repeat songs or repeat the queue instead by `k!repeat [normal/queue]`!")
+            elif repeatMode == 2:
+                embed.add_field(name = "Current Mode: Queue", value = "The bot is now repeating the queue (which can be checked by entering `k!queue`, however the current song will also be included).\nYou can change it to not repeat or repeat one song only by `k!repeat[normal/single]`!")
+        embed.set_footer(text = "Repeat • Bot made by 3_n#7069")
         await ctx.send(embed = embed)
 
     @commands.command(aliases = ["np"])
