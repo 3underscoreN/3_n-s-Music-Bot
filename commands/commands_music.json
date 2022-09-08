@@ -8,5 +8,6 @@
     "queue", 
     "nowplaying",
     "remove",
-    "removeall"
+    "removeall",
+    "search"
 ]

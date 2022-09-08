@@ -1,3 +1,5 @@
+from ast import Index
+from smtplib import quoteaddr
 import disnake
 from disnake.ext import commands
 import pafy
@@ -115,6 +117,24 @@ class music(commands.Cog):
           await ctx.send(embed = embed)
           raise ExceptionResolved
 
+    @commands.command(aliases = ["s"])
+    @commands.guild_only()
+    async def search(self, ctx, *, keyword):
+        query = youtube_search.YoutubeSearch(keyword, max_results = 5).to_dict()
+        embed = disnake.Embed(title = f"Search results of `{keyword}`", color = 0x11f1f5)
+        for i in range(5):
+            embed.add_field(name = "{0}: {1}".format(i + 1, query[i]["title"]), value = "Uploaded by: {0}\nDuration: {1}\n[Click here to view on YouTube]({2})".format(query[i]["channel"], query[i]["duration"], "https://www.youtube.com{0}".format(query[i]["url_suffix"])), inline = False)
+        embed.set_footer(text = "Search • Bot made by 3_n#7069")
+        await ctx.send("Below are the results of the search. If you want to directly play a specific song, enter the index (such as 1) directly without any prefixes.", embed = embed)
+        try:
+            playIndex = await self.bot.wait_for("message", check = lambda message: message.author == ctx.author, timeout = 20.0)
+            videourl = "https://www.youtube.com{0}".format(query[int(playIndex.content) - 1]["url_suffix"])
+            await ctx.invoke(self.bot.get_command("play"), url = videourl)
+        except Exception as e:
+            if isinstance(e, asyncio.TimeoutError) or isinstance(e, ValueError) or isinstance(e, IndexError):
+                pass
+            else:
+                raise e
 
     @commands.command(aliases = ["p"])
     @commands.guild_only()
@@ -146,7 +166,7 @@ class music(commands.Cog):
         except ValueError:
           try:
             embed.add_field(name = "The bot is searching on YouTube", value = f"Hold on while the bot searches {videourl} on YouTube.")
-            searchResult = "https://www.youtube.com/watch?v=" + youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["id"]
+            searchResult = "https://www.youtube.com{0}".format(youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["url_suffix"])
             searched = True
             info = pafy.new(searchResult)
             await message.edit(embed = embed)
