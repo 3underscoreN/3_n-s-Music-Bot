@@ -367,7 +367,7 @@ class music(commands.Cog):
         embed.set_footer(text = "Queue • Bot made by 3_n")
         await ctx.send(embed = embed)
 
-    @commands.command()
+    @commands.command(aliases = ["r"])
     @commands.guild_only()
     async def repeat(self, ctx, newRepeatMode = "None"):
         global repeatMode

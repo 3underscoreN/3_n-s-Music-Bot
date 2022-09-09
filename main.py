@@ -16,7 +16,6 @@ myid = int(os.getenv('OWNER'))
 bot = commands.Bot(
     command_prefix='k!', 
     intents = intents,
-    test_guilds = [836604118059319367, 980089284725964830],
     sync_commmands_debug = True
 )
 bot.remove_command('help')
