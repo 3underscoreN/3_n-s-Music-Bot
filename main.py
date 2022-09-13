@@ -6,6 +6,7 @@ import json
 from difflib import get_close_matches
 import os
 import random
+import traceback
 
 intents = disnake.Intents.default()
 intents.members = True
@@ -155,8 +156,9 @@ async def on_command_error(ctx, error):
             embed=disnake.Embed(title="Error: Unexpected error", color=0xff0000)
             embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
             await ctx.send(embed=embed)
-            print(f'Exception raised with ID {errorID}:')
-            raise error
+            print(f'*************************\nException raised with ID {errorID}:\n')
+            traceback.print_exception(error)
+            print("*************************")
 
 if __name__ == "__main__":
     bot.run(os.getenv('TOKEN'))

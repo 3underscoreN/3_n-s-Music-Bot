@@ -1,6 +1,7 @@
 from ast import Index
 from smtplib import quoteaddr
 import disnake
+import os
 from disnake.ext import commands
 import pafy
 import asyncio
@@ -11,11 +12,20 @@ import youtube_search
 FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
 # INIT:
-playList = []
-playTitle = []
-playUser = []
-playTime = []
-buffer = []
+# playList = []
+# playTitle = []
+# playUser = []
+# playTime = []
+playQueue = []
+'''
+playQueue should contain a list of:
+a list with
+0: URL (string)
+1: Song Title (string)
+2: Users who added this song (string)
+3: Song duration (int in seconds)
+'''
+
 channel = ""
 repeatMode = 0
 '''
@@ -39,41 +49,29 @@ class music(commands.Cog):
         
     def playnext(self, ctx):
         global repeatMode
-        global playList
-        global playTitle
-        global playUser
-        global playTime
+        global playQueue
         global channel
         global FFMPEG_OPTS
         try:
-          if len(playList) == 1:
+          if len(playQueue) == 1:
               if not repeatMode in [1, 2]:
-                playList = []
-                playTitle = []
-                playUser = []
-                playTime = []
+                playQueue.clear()
               else:
                 ctx.voice_client.stop()
                 vc = ctx.voice_client
-                info = pafy.new(playList[0])
+                info = pafy.new(playQueue[0][0])
                 filename = info.getbestaudio().url
                 source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
                 vc.play(source = source, after = lambda e:self.playnext(ctx))
           else:
               if repeatMode == 0:
-                  del playList[0]
-                  del playTitle[0]
-                  del playUser[0]
-                  del playTime[0]
-                  url = playList[0]
+                  del playQueue[0]
+                  url = playQueue[0][0]
               if repeatMode == 2:
-                  playList.append(playList.pop(0))
-                  playTitle.append(playTitle.pop(0))
-                  playUser.append(playUser.pop(0))
-                  playTime.append(playTime.pop(0))
-                  url = playList[0]
+                  playQueue.append(playQueue.pop(0))
+                  url = playQueue[0][0]
               if repeatMode == 1:
-                  url = playList[0]
+                  url = playQueue[0][0]
               ctx.voice_client.stop()
               vc = ctx.voice_client
               info = pafy.new(url)
@@ -86,14 +84,6 @@ class music(commands.Cog):
     @commands.command(aliases = ["j"])
     @commands.guild_only()
     async def join(self, ctx):
-        global playList
-        global playTitle
-        global playUser
-        global playTime
-        playList = []
-        playTitle = []
-        playUser = []
-        playTime = []
         channel = ctx.author.voice.channel
         if ctx.voice_client is None:
             await channel.connect()
@@ -119,15 +109,9 @@ class music(commands.Cog):
     @commands.command(aliases = ["lv", "l", "dc", "disconnect", "stop"])
     @commands.guild_only()
     async def leave(self,ctx):
-        global playList
-        global playTitle
-        global playUser
-        global playTime
+        global playQueue
         await ctx.voice_client.disconnect()
-        playList.clear()
-        playTitle.clear()
-        playUser.clear()
-        playTime.clear()
+        playQueue.clear()
         embed = disnake.Embed(title = "Success", color = 0x00ff00)
         embed.add_field(name = "The bot has left the voice channel.", value = "The queue is also cleared. If you want to vibe with music again, you can use `k!join`!")
         embed.set_footer(text = "Leave • Bot made by 3_n#7069")
@@ -168,18 +152,15 @@ class music(commands.Cog):
       embed.add_field(name = "Processing...", value = "The bot is processing your command.\nIf you are stuck in this embed, most likely the bot went into a problem and error handling didn't catch it.\nPlease open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot) if that happens.")
       embed.set_footer(text = "Play • Bot made by 3_n#7069")
       message = await ctx.send(embed = embed)
-      global playList
+      global playQueue
       global channel
-      global playTitle
-      global playUser
-      global playTime
       global FFMPEG_OPTS
       searched = False
       if ctx.voice_client is None:
           await ctx.author.voice.channel.connect()
       videourl = url.split('&', 1)[0]
       channel = ctx.channel
-      if playList == []: # No song is playing in vc
+      if playQueue == []: # No song is playing in vc
         ctx.voice_client.stop()
         vc = ctx.voice_client
         embed = disnake.Embed(title = "Loading...", color = 0x0000ff)
@@ -206,10 +187,11 @@ class music(commands.Cog):
         filename = info.getbestaudio().url
         source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
         vc.play(source = source, after = lambda e: self.playnext(ctx))
-        playList.append(info.watchv_url)
-        playTitle.append(info.title)
-        playTime.append(info.length)
-        playUser.append(ctx.author.name)
+        playQueue.append([info.watchv_url, info.title, ctx.author.name, info.length])
+        # playList.append(info.watchv_url)
+        # playTitle.append(info.title)
+        # playTime.append(info.length)
+        # playUser.append(ctx.author.name)
         await asyncio.sleep(0.25)
         embed = disnake.Embed(title = "Success", color = 0x00ff00)
         embed.add_field(name = f'"{info.title}" has been added into the playlist.', value = "It will be played instantly.")
@@ -236,13 +218,14 @@ class music(commands.Cog):
             return
           except:
             raise urlInvalid(url)
-        playList.append(info.watchv_url)
+        # playList.append(info.watchv_url)
         title = info.title
-        playTitle.append(title)
-        playTime.append(info.length)
-        playUser.append(ctx.author.name)
+        # playTitle.append(title)
+        # playTime.append(info.length)
+        # playUser.append(ctx.author.name)
+        playQueue.append([info.watchv_url, title, ctx.author.name, info.length])
         embed = disnake.Embed(title = "Success", color = 0x00ff00)
-        embed.add_field(name = f'"**{title}**" has been added into the playlist.', value = f"It is currently in queue with a positon of {len(playTitle) - 1}.\nYou can check the whole queue with command `k!queue`.")
+        embed.add_field(name = f'"**{title}**" has been added into the queue.', value = f"It is currently in queue with a positon of {len(playQueue) - 1}.\nYou can check the whole queue with command `k!queue`.")
         embed.set_footer(text = "Play • Bot made by 3_n#7069")
         await message.edit(embed = embed)
 
@@ -283,11 +266,11 @@ class music(commands.Cog):
     @commands.guild_only()
     async def skip(self,ctx):
       embed = disnake.Embed(title = "Success", color = 0x00ff00)
-      if len(playTitle) > 1 and repeatMode in [0, 2]:
-        embed.add_field(name = "Current song has been skipped.", value = f'The next song in queue, "**{playTitle[1]}**" will start playing now.')
+      if len(playQueue) > 1 and repeatMode in [0, 2]:
+        embed.add_field(name = "Current song has been skipped.", value = f'The next song in queue, "**{playQueue[1][1]}**" will start playing now.')
       elif repeatMode == 1:
         embed.add_field(name = "Current song has been skipped.", value = "However, as repeat mode is single right now, the song will start playing again. There's no escape now.")
-      elif len(playTitle) == 1 and repeatMode == 2:
+      elif len(playQueue) == 1 and repeatMode == 2:
         embed.add_field(name = "Current song has been skipped.", value = "However, as repeat mode is queue and there's only 1 song in the queue, the song will start playing again. There's no escape now.")
       else:
         embed.add_field(name = "Current song has been skipped.", value = "There are no other songs in queue now. Playing will be stopped now.")
@@ -298,10 +281,10 @@ class music(commands.Cog):
     @commands.command(aliases = ["rmall", "rma", "delall", "deleteall", "dela"])
     @commands.guild_only()
     async def removeall(self, ctx):
-        global playList
-        global playTitle
-        global playUser
-        global playTime
+        global playQueue
+        # global playTitle
+        # global playUser
+        # global playTime
         embed = disnake.Embed(title = "Confirmation", color = 0xff0000)
         embed.add_field(name = "Are you sure??", value = "If you delete everything in the queue now, they cannot be added back! You will lost everything in it, ~~including one free Alex moan sound!~~\nType `yes` or `y` to confirm your choice without command prefixes. Uppercase will also work.\nThe bot will cancel the operation if no response is receiveed in 30 seconds.")
         embed.set_footer(text = "RemoveAll • Bot made by 3_n#7069")
@@ -309,10 +292,10 @@ class music(commands.Cog):
         try: 
           response = await self.bot.wait_for("message", check = lambda message: message.author == ctx.author, timeout = 30.0)
           if (response.content.lower() in ["yes", "y"]):
-            del playList[1:]
-            del playTime[1:]
-            del playTitle[1:]
-            del playUser[1:]
+            del playQueue[1:]
+            # del playTime[1:]
+            # del playTitle[1:]
+            # del playUser[1:]
             embed = disnake.Embed(title = "Success", color = 0x00ff00)
             embed.add_field(name = "All songs in the queue has been removed.", value = "Don't worry, you can always add more songs!")
             embed.set_footer(text = "RemoveAll • Bot made by 3_n#7069")
@@ -337,15 +320,14 @@ class music(commands.Cog):
           raise Exception
       except:
         raise commands.UserInputError
-      global playList
-      global playTime
-      global playTitle
-      global playUser
-      global buffer
-      del playList[intindex]
-      del playTime[intindex]
-      del playTitle[intindex]
-      del playUser[intindex]
+      global playQueue
+      # global playTime
+      # global playTitle
+      # global playUser
+      del playQueue[intindex]
+      # del playTime[intindex]
+      # del playTitle[intindex]
+      # del playUser[intindex]
       embed = disnake.Embed(title = "Success", color = 0x00ff00)
       embed.add_field(name = "The song has been removed.", value = "Don't worry, you can always add more songs!")
       embed.set_footer(text = "Remove • Bot made by 3_n#7069")
@@ -355,10 +337,12 @@ class music(commands.Cog):
     @commands.guild_only()
     async def queue(self,ctx):
       embed = disnake.Embed(color=0x11f1f5, title = "Song Queue: ")
-      if len(playList) > 1:
-        for i in range(1, len(playList)):
-          embed.add_field(name="{0}: {1}".format(i, playTitle[i]), value="Added by: {0}\nDuration: [{1}:{2:02d}]\n[(Click here to open on YouTube)]({3})".format(playUser[i], playTime[i]//60, playTime[i] % 60, playList[i]), inline=False)
-        TotalPlayTime = sum(playTime) - playTime[0]
+      if len(playQueue) > 1:
+        TotalPlayTime = 0
+        for i in range(1, len(playQueue)):
+          embed.add_field(name=f"{i}: {playQueue[i][1]}", value="Added by: {0}\nDuration: [{1}:{2:02d}]\n[(Click here to open on YouTube)]({3})".format(playQueue[i][2], playQueue[i][3]//60, playQueue[i][3] % 60, playQueue[i][0]), inline=False)
+          TotalPlayTime += playQueue[i][3]
+        # TotalPlayTime = sum(playTime) - playTime[0]
         embed.set_footer(text="Song Queue • Total Duration: {0}:{1:02d} • Bot made by 3_n#7069".format(TotalPlayTime//60,TotalPlayTime%60))
         await ctx.send(embed=embed)
       else:
@@ -402,9 +386,9 @@ class music(commands.Cog):
     async def nowplaying(self,ctx):
       try:
         embed = disnake.Embed(title="**Now playing: **", color=0x11f1f5)
-        info = pafy.new(playList[0])
+        info = pafy.new(playQueue[0][0])
         embed.set_thumbnail(url=info.thumb)
-        embed.add_field(name="{0}".format(playTitle[0], playList[0]), value="([Play on YouTube]({3}))\nAdded by {0}\nDuration: [{1}:{2:02d}]".format(playUser[0] ,playTime[0]//60 ,playTime[0] % 60, playList[0]), inline=False)
+        embed.add_field(name=f"{playQueue[0][1]}", value="([Play on YouTube]({3}))\nAdded by {0}\nDuration: [{1}:{2:02d}]".format(playQueue[0][2] ,playQueue[0][3]//60 ,playQueue[0][3] % 60, playQueue[0][0]), inline=False)
         embed.set_footer(text="Now playing • Bot made by 3_n#7069")
         await ctx.send(embed = embed)
       except(IndexError):
