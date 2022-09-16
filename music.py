@@ -1,4 +1,3 @@
-import youtube_dl.utils as ydl
 from smtplib import quoteaddr
 import disnake
 import os
@@ -147,7 +146,7 @@ class music(commands.Cog):
 
     @commands.command(aliases = ["p"])
     @commands.guild_only()
-    async def play(self,ctx,*,url):
+    async def play(self, ctx, *, url):
         embed = disnake.Embed(title = "Loading...", color = 0x0000ff)
         embed.add_field(name = "Processing...", value = "The bot is processing your command.\nIf you are stuck in this embed, most likely the bot went into a problem and error handling didn't catch it.\nPlease open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot) if that happens.")
         embed.set_footer(text = "Play • Bot made by 3_n#7069")
