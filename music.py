@@ -140,7 +140,6 @@ class music(commands.Cog):
         global playQueue
         global channel
         global FFMPEG_OPTS
-        searched = False
         if ctx.voice_client is None:
             await ctx.author.voice.channel.connect()
         videourl = url.split('&', 1)[0]
@@ -154,11 +153,11 @@ class music(commands.Cog):
                 info = pafy.new(videourl)
                 embed.add_field(name = "The bot has identified the URL.", value = "Hold on while the bot parses the URL...")
                 await message.edit(embed = embed)
-            except (ValueError, OSError):
+            except (ValueError, OSError): 
+            # sometimes OSError is thrown instead of valueError when songs cannot be searched (mostly when non-ascii characters is inputted)
                 try:
                     embed.add_field(name = "The bot is searching on YouTube", value = f"Hold on while the bot searches {videourl} on YouTube.")
                     searchResult = "https://www.youtube.com{0}".format(youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["url_suffix"])
-                    searched = True
                     info = pafy.new(searchResult)
                     await message.edit(embed = embed)
                 except OSError:
