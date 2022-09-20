@@ -14,25 +14,11 @@ FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_
 # playList = []
 # playTitle = []
 # playUser = []
-# playTime = []
-playQueue = []
-'''
-playQueue should contain a list of:
-a list with
-0: URL (string)
-1: Song Title (string)
-2: Users who added this song (string)
-3: Song duration (int in seconds)
-'''
+# playTime = [] # Those variables are not used anymore
+playQueue = [] # should contain lists with [URL (str), Title (str), User (str), Duration (int)]
 
 channel = ""
-repeatMode = 0
-'''
-for repeat mode,
-0 = no repeat (normal)
-1 = single
-2 = playList
-'''
+repeatMode = 0 # 0 = normal, 1 = single, 2 = list
 # INIT END
 
 class urlInvalid(Exception):
@@ -168,7 +154,7 @@ class music(commands.Cog):
                 info = pafy.new(videourl)
                 embed.add_field(name = "The bot has identified the URL.", value = "Hold on while the bot parses the URL...")
                 await message.edit(embed = embed)
-            except ValueError:
+            except (ValueError, OSError):
                 try:
                     embed.add_field(name = "The bot is searching on YouTube", value = f"Hold on while the bot searches {videourl} on YouTube.")
                     searchResult = "https://www.youtube.com{0}".format(youtube_search.YoutubeSearch(videourl, max_results = 1).to_dict()[0]["url_suffix"])
