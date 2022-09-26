@@ -6,7 +6,15 @@ import json
 from difflib import get_close_matches
 import os
 import random
-import traceback
+import traceback, logging
+
+errorID = 0
+logging.basicConfig(
+    filename = "botLog.log", 
+    level = logging.INFO, 
+    format = "%(asctime)s %(levelname)s: %(message)s", 
+    datefmt = '%m/%d/%Y %I:%M:%S %p'
+)
 
 intents = disnake.Intents.default()
 intents.members = True
@@ -62,6 +70,14 @@ async def ping(ctx):
     embed.add_field(name=f"The bot's latency is `{round(bot.latency * 1000, 1)}ms`", value = "If there's a noticable delay in command processing, the bot might have an internal error.\nPlease get in touch with 3_n#7069 if that happens.", inline=False)
     embed.set_footer(text = "Ping • Bot made by 3_n#7069")
     await ctx.send(embed = embed)
+
+# debug only
+@bot.command()
+async def raiseException(ctx):
+    if ctx.message.author.id == myid:
+        raise Exception("This exception is raised for debugging purpose. No action is required.")
+    else:
+        raise commands.NotOwner()
 
 @bot.command()
 async def help(ctx, command = None):
@@ -155,10 +171,12 @@ async def on_command_error(ctx, error):
                 errorID += str(random.choice(range(10)))
             embed=disnake.Embed(title="Error: Unexpected error", color=0xff0000)
             embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
-            await ctx.send(embed=embed)
-            print(f'*************************\nException raised with ID {errorID}:\n')
-            traceback.print_exception(error)
-            print("*************************")
+            embed.set_footer(text="Bot made by 3_n#7069")
+            await ctx.send(embed = embed)
+    if errorID == '':
+        logging.warning(f"Expection caught ({type(error)}, resolved). Original Message: {repr(error)}")
+    else:
+        logging.error(f"Exception reported and uncaught with ID {errorID}: {repr(error)}")
 
 if __name__ == "__main__":
     bot.run(os.getenv('TOKEN'))
