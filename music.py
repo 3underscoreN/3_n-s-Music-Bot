@@ -1,4 +1,3 @@
-from smtplib import quoteaddr
 import disnake
 import os
 from disnake.ext import commands
@@ -7,8 +6,11 @@ import asyncio
 from urllib.parse import urlparse
 import youtube_search
 
-
-FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+# constants
+FFMPEG_OPTS = {
+    'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 
+    'options': '-vn'
+}
 
 # INIT:
 # playList = []
