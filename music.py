@@ -3,7 +3,6 @@ import os
 from disnake.ext import commands
 import pafy
 import asyncio
-from urllib.parse import urlparse
 import youtube_search
 
 # constants

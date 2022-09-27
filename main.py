@@ -6,7 +6,7 @@ import json
 from difflib import get_close_matches
 import os
 import random
-import traceback, logging
+import logging
 
 errorID = 0
 logging.basicConfig(
@@ -28,11 +28,10 @@ bot = commands.Bot(
     sync_commmands_debug = True
 )
 bot.remove_command('help')
-directory = os.getcwd()
 
-helpText = json.loads(open(f"{directory}/commands/helpText.json").read())
-COMMANDS_MUSIC = json.loads(open(f"{directory}/commands/commands_music.json").read())
-COMMANDS_GAMES = json.loads(open(f"{directory}/commands/commands_games.json").read())
+helpText = json.loads(open("./commands/helpText.json").read())
+COMMANDS_MUSIC = json.loads(open("./commands/commands_music.json").read())
+COMMANDS_GAMES = json.loads(open("./commands/commands_games.json").read())
 
 COMMANDS = [*COMMANDS_MUSIC, *COMMANDS_GAMES, "help", "shutdown", "about"]
 comString_music = ''
@@ -166,7 +165,6 @@ async def on_command_error(ctx, error):
         return
     else:
         if isinstance(error, commands.CommandInvokeError):
-            print("Error ID creation start:")
             for _ in range(6):
                 errorID += str(random.choice(range(10)))
             embed=disnake.Embed(title="Error: Unexpected error", color=0xff0000)

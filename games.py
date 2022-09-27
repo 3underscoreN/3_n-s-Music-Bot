@@ -2,13 +2,11 @@ import disnake
 from disnake.ext import commands
 import asyncio
 import random
-import json, os
+import json
 import asyncio
 import string
 
-directory = os.getcwd()
-
-wordList = json.loads(open(f"{directory}/games/wordle.json").read())
+wordList = json.loads(open("./games/wordle.json").read())
 
 class noFriendsDetected(Exception):
     pass
