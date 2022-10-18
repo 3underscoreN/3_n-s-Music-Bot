@@ -7,3 +7,24 @@ our region, I decided to write a bot.
 This is also my first time tracking project with git, please feel free to use and modify my code and teach me how to write python/ use git and Github (If you happpen
 to find this project as a stranger. :P)
 
+## Dependencies
+You would need these python packages before you can run this program:
+* `disnake`
+* `pafy`
+* `PyNaCl`
+* `youtube-dl`
+* `youtube-search`
+
+Run the following to install these dependencies:
+```
+$ pip install disnake pafy PyNaCl youtube-dl youtube-search
+```
+---
+Apart from that, you also need to setup your own bot in [discord developer portal](https://discord.com/developers).
+
+## Deployment
+Setup two environment variables:
+* `OWNER`: Owner's ID
+* `TOKEN`: Your bot's token
+
+Run `main.py` after cloning the project.
