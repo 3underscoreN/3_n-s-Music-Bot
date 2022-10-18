@@ -74,7 +74,6 @@ class games(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def wordle(self, ctx):
-        player = ctx.author
         answer = random.choice(wordList).lower()
         answer2 = list(answer) # answer but correct guess is removed
         guessCount = 0
