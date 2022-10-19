@@ -30,4 +30,4 @@ Setup two environment variables:
 Run `main.py` after cloning the project.
 
 ## Contribution
-If you would like to contribute to this project, you can always fork thiks repo and open a pull request once you are done with your side :)
+If you would like to contribute to this project, you can always fork this repo and open a pull request once you are done with your side :)
