@@ -131,46 +131,60 @@ async def on_command_error(ctx, error):
         embed.add_field(name="The command you entered does not seem to be valid.", value="Please double-check your entry. If you don't know what you are doing, you can use `k!help` for a list of commands availabe.\n\nYou can also use `k!help [command]` to find details about a specific command.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
-    elif isinstance(error, commands.UserInputError):
+        return
+
+    if isinstance(error, commands.UserInputError):
         embed = disnake.Embed(title = "Error: User Input Error", color = 0xff0000)
         embed.add_field(name = "We have detected an error in your input.", value = "Please check your parameters to see if they are in the right formation or are entered correctly.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed = embed)
-    elif isinstance(error, commands.MissingRequiredArgument):
+        return
+
+    if isinstance(error, commands.MissingRequiredArgument):
         embed=disnake.Embed(title="Error: Missing arguments", color=0xff0000)
         embed.add_field(name="Some required arguments in your entry seems to be missing.", value="Please double-check your entry. You can use `k!help [command]` to find all the required arguments (usually bracketed by `<>`) in the command.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
-    elif isinstance(error, commands.TooManyArguments):
+        return
+
+    if isinstance(error, commands.TooManyArguments):
         embed=disnake.Embed(title="Error: Too many arguments", color=0xff0000)
         embed.add_field(name="You have entered too many arguments in your command.", value="Please double-check your entry. You can use `k!help [command]` to find the arguments that are redundant in your command.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
-    elif isinstance(error, commands.NotOwner):
+        return
+
+    if isinstance(error, commands.NotOwner):
         embed=disnake.Embed(title="Error: Access Denied", color=0xff0000)
         embed.add_field(name="It seems like only the owner can execute the command.", value="Please double-check your entry. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
-    elif isinstance(error, commands.BotMissingPermissions):
+        return
+
+    if isinstance(error, commands.BotMissingPermissions):
         embed=disnake.Embed(title="Error: Bot missing permission", color=0xff0000)
         embed.add_field(name="It seems like the bot doesn't have permission to do so", value="Please politely ask moderators to fix this issue. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
-    elif isinstance(error, commands.NoPrivateMessage):
+        return
+
+    if isinstance(error, commands.NoPrivateMessage):
         embed=disnake.Embed(title="Error: No Direct Message", color=0xff0000)
         embed.add_field(name="This command can't run in direct message.", value="Please run the command in a server text channel. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
         embed.set_footer(text="Bot made by 3_n#7069")
         await ctx.send(embed=embed)
-    elif isinstance(error, music.ExceptionResolved):
         return
-    else:
-        if isinstance(error, commands.CommandInvokeError):
-            for _ in range(6):
-                errorID += str(random.choice(range(10)))
-            embed=disnake.Embed(title="Error: Unexpected error", color=0xff0000)
-            embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
-            embed.set_footer(text="Bot made by 3_n#7069")
-            await ctx.send(embed = embed)
+
+    if isinstance(error, music.ExceptionResolved):
+        return
+
+    if isinstance(error, commands.CommandInvokeError):
+        for _ in range(6):
+            errorID += str(random.choice(range(10)))
+        embed=disnake.Embed(title="Error: Unexpected error", color=0xff0000)
+        embed.add_field(name="There is an unexpected error while executing your command.", value=f"If you believe this is a bug, please forward this error ID (`{errorID}`) to 3_n#7069 or open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
+        embed.set_footer(text="Bot made by 3_n#7069")
+        await ctx.send(embed = embed)
     if errorID == '':
         logging.warning(f"Expection caught ({type(error)}, resolved). Original Message: {repr(error)}")
     else:
