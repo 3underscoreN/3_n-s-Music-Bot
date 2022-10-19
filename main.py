@@ -80,7 +80,6 @@ async def raiseException(ctx):
 
 @bot.command()
 async def help(ctx, command = None):
-    global comString
     if command == None or command == "None":
         embed = disnake.Embed(title="**Help Panel**", description="Here is a list of commands the bot has!\n\nUse `k!help [command]` to get detailed info about a specific command.", color = 0x11f1f5)
         embed.add_field(name="Music", value = comString_music, inline=True)
