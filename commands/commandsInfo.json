@@ -1,0 +1,110 @@
+{
+    "join":{
+        "format": "k!join",
+        "aliases": ["j"],
+        "description": "Joins the voice channel you are currently in.",
+        "examples": ["k!join", "k!j"]
+    },
+    "leave":{
+        "format":"k!leave", 
+        "aliases": ["lv", "l", "dc", "disconnect", "stop"], 
+        "description": "Leaves the voice channel and emptys the queue.",
+        "examples": ["k!leave", "k!disconnect"]
+    },
+    "play":{
+        "format": "`k!play <Youtube URL / keywords>`", 
+        "aliases": ["p"],
+        "description": "Plays the specified URL.\n If the bot fails to play from the link, the bot will search YouTube for results.\n**Note: If playlist URLs are used, only the target song will be added to the playlist.**", 
+        "examples": ["k!play https://www.youtube.com/watch?v=dQw4w9WgXcQ", "k!p https://youtu.be/dQw4w9WgXcQ`\n`k!p rickroll"]
+    },
+    "pause":{
+        "format":"k!pause",
+        "aliases": ["None"], 
+        "description":"Pauses the song the bot is currently playing.",
+        "examples": ["k!pause"]
+    },
+    "resume":{
+        "format": "k!resume",
+        "aliases": ["None"],
+        "description": "Resumes the song if the song is paused.",
+        "examples": ["k!resume"]
+    },
+    "skip":{
+        "format": "k!skip",
+        "aliases": ["None"],
+        "description": "Skips the song the bot is currently playing and plays the next song in the queue.",
+        "examples": ["k!skip"]
+    },
+    "queue":{
+        "format": "k!queue",
+        "aliases": ["q", "list", "ls"],
+        "description": "Displays the current song queue.",
+        "examples": ["k!queue"]
+    },
+    "nowplaying":{
+        "format": "k!nowplaying",
+        "aliases": ["np"],
+        "description": "Displays infomration about the current song.",
+        "examples": ["k!nowplaying", "k!np"]
+    },
+    "help":{
+        "format":"k!help [command]",
+        "aliases": ["None"],
+        "description": "Shows a list of all commands without arguments, and shows details about a specific command if one is passed.",
+        "examples": ["k!help", "k!help play"]
+    },
+    "shutdown":{
+        "format":"k!shutdown",
+        "aliases": ["None"],
+        "description": "Shuts down the bot. \n*Only to be used by the bot owner.*",
+        "examples": ["k!shutdown"]
+    },
+    "wordle":{
+        "format":"k!wordle",
+        "aliases": ["None"],
+        "description": "Plays a game of wordle.\nIf you want to know the rules: https://en.wikipedia.org/wiki/Wordle",
+        "examples": ["k!wordle"]
+    },
+    "about":{
+        "format":"k!about",
+        "aliases": ["abt"],
+        "description": "Displays information about the bot, including special thanks & support information.",
+        "examples": ["k!about", "k!abt"]
+    },
+    "tictactoe":{
+        "format":"k!tictactoe <Ping your friend>",
+        "aliases": ["ttt"],
+        "description": "Plays a game that always draws with your friend.",
+        "examples": ["k!tictactoe @Alice the e girl", "k!ttt @Alice the e girl"]
+    },
+    "ping":{
+        "format":"k!ping",
+        "aliases": ["None"],
+        "description": "Gets bot latency.",
+        "examples": ["k!ping"]
+    },
+    "remove":{
+        "format":"k!remove <Position in queue>",
+        "aliases": ["rm", "del", "delete"],
+        "description": "Deletes a specified song in the queue.",
+        "examples": ["k!remove 2", "k!rm 3"]
+    },
+    "removeall":{
+        "format":"k!removeall",
+        "aliases": ["rma", "rmall", "dela", "deall", "deleteall"],
+        "description": "Deletes **EVERYTHING** in the queue.",
+        "examples": ["k!removeall", "k!dela"]
+    },
+    "search":{
+        "format": "k!search <keyword>", 
+        "aliases": ["s"],
+        "description": "Searches YouTube and displays the first 5 results.",
+        "examples": ["k!search rickroll", "k!s 夜に駆ける"]
+    },
+    "repeat":{
+        "format": "k!repeat [normal/single/queue]", 
+        "aliases": ["r"],
+        "description": "Toggles the repeat mode between normal, single loop and queue loop.\nIf no parameters are passed, the bot will display the current repeat mode.",
+        "examples": ["k!repeat normal", "k!r s"]
+    }
+}

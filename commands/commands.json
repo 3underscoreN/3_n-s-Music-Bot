@@ -1,0 +1,25 @@
+{
+    "music":[
+        "join", 
+        "leave", 
+        "play", 
+        "pause", 
+        "resume", 
+        "skip", 
+        "queue", 
+        "nowplaying",
+        "remove",
+        "removeall",
+        "repeat",
+        "search"
+    ],
+    "games":[
+        "wordle",
+        "tictactoe"
+    ],
+    "others":[
+        "help",
+        "shutdown",
+        "about"
+    ]
+}
