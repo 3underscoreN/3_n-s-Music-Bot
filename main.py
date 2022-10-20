@@ -84,7 +84,7 @@ async def help(ctx, command = None):
             embed = disnake.Embed(title="**Help Panel**", description = "{0}".format(command), color=0x11f1f5)
             tDetails = COMMANDS_INFO[command.lower()] # temp, can be discarded
             for i in COMMANDS_INFO_HEADING:
-                if type(tDetails[i]) != type([]):
+                if type(tDetails[i]) != list:
                     embed.add_field(name = i.capitalize(), value = f"`{tDetails[i]}`" if i == "format" else tDetails[i], inline = False)
                 else:
                     embed.add_field(name = i.capitalize(), value = ", ".join(tDetails[i]) if i == "aliases" else "`" + "`\n`".join(tDetails[i]) + "`", inline = False)
