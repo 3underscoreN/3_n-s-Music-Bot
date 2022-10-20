@@ -19,8 +19,14 @@ Run the following to install these dependencies:
 ```
 $ pip install disnake pafy PyNaCl youtube-dl youtube-search
 ```
----
 Apart from that, you also need to setup your own bot in [discord developer portal](https://discord.com/developers).
+
+---
+### Optional Dependencies
+If you don't like to use youtube-dl, you can use pafy's internal backend by setting environment variable `PAFY_BACKEND` to `"iternal"`. Keep in mind that I have never used it so I have no idea how it performs.
+
+Alternatively, you can choose [yt-dlp](https://github.com/yt-dlp/yt-dlp) since `youtube-dl` repo is no longer active. However, you need to change `pafy` files so that it imports `yt_dlp` instead of `youtube_dl`.
+
 
 ## Deployment
 Setup two environment variables:

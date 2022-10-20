@@ -12,7 +12,7 @@
         "examples": ["k!leave", "k!disconnect"]
     },
     "play":{
-        "format": "`k!play <Youtube URL / keywords>`", 
+        "format": "k!play <Youtube URL / keywords>", 
         "aliases": ["p"],
         "description": "Plays the specified URL.\n If the bot fails to play from the link, the bot will search YouTube for results.\n**Note: If playlist URLs are used, only the target song will be added to the playlist.**", 
         "examples": ["k!play https://www.youtube.com/watch?v=dQw4w9WgXcQ", "k!p https://youtu.be/dQw4w9WgXcQ`\n`k!p rickroll"]

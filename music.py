@@ -19,28 +19,67 @@ FFMPEG_OPTS = {
 playQueue = [] # should contain lists with [URL (str), Title (str), User (str), Duration (int)]
 
 channel = ""
-repeatMode = 0 # 0 = normal, 1 = single, 2 = list
+# repeatMode = 0 # 0 = normal, 1 = single, 2 = list
 # INIT END
+
+class repeatMode():
+    def __init__(self, /, mode):
+        self._mode = mode
+
+    @property
+    def mode(self):
+        return self._mode
+
+    @mode.setter
+    def mode(self, value):
+        if value.lower() == "none":
+            return
+        if str(value).lower() in ["0", "normal", "n", "no", "off"]:
+            self._mode = 0
+            return 0
+        if str(value).lower() in ["1", "single", "s", "brainwash", "loop"]:
+            self._mode = 1
+            return 1
+        if str(value).lower() in ["2", "list", "l", "queue", "q", "ls", "looplist", "ll"]:
+            self._mode = 2
+            return 2
+        raise commands.UserInputError("Invalid mode given")
+
+    @mode.getter
+    def mode(self):
+        if self._mode == 0:
+            return "normal"
+        if self._mode == 1:
+            return "single"
+        if self._mode == 2:
+            return "list"
+
+repeatObject = repeatMode(0)
+
 
 class urlInvalid(Exception):
     def __init__(self, url):
         self.url = url
 
 class ExceptionResolved(Exception):
-    pass
+    def __init__(self, OriginalError):
+        self.OriginalError = OriginalError
+        
+    def __repr__(self):
+        return self.OriginalError.__repr__()
 
 class music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
     def playnext(self, ctx):
-        global repeatMode
+        global repeatObject
         global playQueue
         global channel
         global FFMPEG_OPTS
         try:
             if len(playQueue) == 1:
-                if not repeatMode in [1, 2]:
+                if not repeatObject.mode in ["single", "list"]:
                     playQueue.clear()
                 else:
                     ctx.voice_client.stop()
@@ -50,13 +89,13 @@ class music(commands.Cog):
                     source = disnake.FFmpegPCMAudio(filename, **FFMPEG_OPTS)
                     vc.play(source = source, after = lambda e:self.playnext(ctx))
             else:
-                if repeatMode == 0:
+                if repeatObject.mode == "normal":
                     del playQueue[0]
                     url = playQueue[0][0]
-                if repeatMode == 2:
+                if repeatObject.mode == "list":
                     playQueue.append(playQueue.pop(0))
                     url = playQueue[0][0]
-                if repeatMode == 1:
+                if repeatObject.mode == "single":
                     url = playQueue[0][0]
                 ctx.voice_client.stop()
                 vc = ctx.voice_client
@@ -90,7 +129,7 @@ class music(commands.Cog):
             embed.add_field(name = "It seems like your are not in a voice channel.", value = "Please join a voice channel before I can blast music there.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
             embed.set_footer(text = "Bot made by 3_n#7069")
             await ctx.send(embed = embed)
-            raise ExceptionResolved
+            raise ExceptionResolved(error)
 
     @commands.command(aliases = ["lv", "l", "dc", "disconnect", "stop"])
     @commands.guild_only()
@@ -110,7 +149,7 @@ class music(commands.Cog):
             embed.add_field(name = "It seems like the bot is not in any voice channels.", value = "The command can only be use when the bot is in a voice channel.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
             embed.set_footer(text="Bot made by 3_n#7069")
             await ctx.send(embed = embed)
-            raise ExceptionResolved
+            raise ExceptionResolved(error)
 
     @commands.command(aliases = ["s"])
     @commands.guild_only()
@@ -221,13 +260,13 @@ class music(commands.Cog):
             embed.add_field(name="It seems like the URL is invalid", value="This bot fetches information via the 11-character video ID (should be in your URL in a format of `?watch=<11-character ID>`). Please check if it is present in your URL. If you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).", inline=False)
             embed.set_footer(text="Bot made by 3_n#7069")
             await ctx.send(embed=embed)
-            raise ExceptionResolved
+            raise ExceptionResolved(error)
         elif isinstance(error.__cause__, AttributeError):
             embed = disnake.Embed(title = "Error: User not in voice channel", color = 0xff0000)
             embed.add_field(name = "It seems like your are not in a voice channel.", value = "Please join a voice channel before I can blast music there.\nIf you believe this is a bug, please open an issue on [Github project page](https://github.com/3underscoreN/3_n-s-Music-Bot).")
             embed.set_footer(text = "Bot made by 3_n#7069")
             await ctx.send(embed = embed)
-            raise ExceptionResolved
+            raise ExceptionResolved(error)
 
     @commands.command()
     @commands.guild_only()
@@ -251,11 +290,11 @@ class music(commands.Cog):
     @commands.guild_only()
     async def skip(self,ctx):
         embed = disnake.Embed(title = "Success", color = 0x00ff00)
-        if len(playQueue) > 1 and repeatMode in [0, 2]:
+        if len(playQueue) > 1 and repeatObject.mode in ["normal", "list"]:
             embed.add_field(name = "Current song has been skipped.", value = f'The next song in queue, "**{playQueue[1][1]}**" will start playing now.')
-        elif repeatMode == 1:
+        elif repeatObject.mode == "single":
             embed.add_field(name = "Current song has been skipped.", value = "However, as repeat mode is single right now, the song will start playing again. There's no escape now.")
-        elif len(playQueue) == 1 and repeatMode == 2:
+        elif len(playQueue) == 1 and repeatObject.mode == "list":
             embed.add_field(name = "Current song has been skipped.", value = "However, as repeat mode is queue and there's only 1 song in the queue, the song will start playing again. There's no escape now.")
         else:
             embed.add_field(name = "Current song has been skipped.", value = "There are no other songs in queue now. Playing will be stopped now.")
@@ -339,32 +378,30 @@ class music(commands.Cog):
     @commands.command(aliases = ["r"])
     @commands.guild_only()
     async def repeat(self, ctx, newRepeatMode = "None"):
-        global repeatMode
-        if newRepeatMode.lower() in ["0", "n", "normal", "no", "off"]:
-            newRepeatMode = 0
-        elif newRepeatMode.lower() in ["1", "s", "single", "loop", "brainwash"]:
-            newRepeatMode = 1
-        elif newRepeatMode.lower() in ["2", "loopqueue", "queue", "list", "q", "ls"]:
-            newRepeatMode = 2
+        global repeatObject
+        # if newRepeatMode.lower() in ["0", "normal", "blah blah blah"]:
+        #     newRepeatMode = 0
+        # elif newRepeatMode.lower() in ["1", "s", "single", "loop", "brainwash"]:
+        #     newRepeatMode = 1
+        # elif newRepeatMode.lower() in ["2", "loopqueue", "queue", "list", "q", "ls"]:
+        #     newRepeatMode = 2
+        repeatObject.mode = newRepeatMode
         if newRepeatMode == "None": 
             embed = disnake.Embed(title = "Repeat status: ", color = 0x00ff00)
-            if repeatMode == 0:
+            if repeatObject.mode == "normal":
                 embed.add_field(name = "Normal", value = "This bot is not repeating any music.\nYou can change it to repeat 1 song or multiple songs by `k!repeat [single/queue]`!")
-            elif repeatMode == 1:
+            elif repeatObject.mode == "single":
                 embed.add_field(name = "Single", value = "This bot is constantly repeating one single song ~~to brainwash everyone here~~.\nYou can change it to not repeat songs or repeat the queue instead by `k!repeat [normal/queue]`!")
-            elif repeatMode == 2:
+            elif repeatObject.mode == "list":
                 embed.add_field(name = "Queue", value = "The bot is repeating the queue (which can be checked by entering `k!queue`, however the current song will also be included).\nYou can change it to not repeat or repeat one song only by `k!repeat[normal/single]`!")
-        elif newRepeatMode in [0, 1, 2]:
-            repeatMode = newRepeatMode
-            embed = disnake.Embed(title = "Success", color = 0x00ff00)
-            if repeatMode == 0:
-                embed.add_field(name = "Curreny Mode: Normal", value = "This bot is now not repeating any music.\nYou can change it to repeat 1 song or multiple songs by `k!repeat [single/queue]`!")
-            elif repeatMode == 1:
-                embed.add_field(name = "Current Mode: Single", value = "This bot is now constantly repeating one single song.\nYou can change it to not repeat songs or repeat the queue instead by `k!repeat [normal/queue]`!")
-            elif repeatMode == 2:
-                embed.add_field(name = "Current Mode: Queue", value = "The bot is now repeating the queue (which can be checked by entering `k!queue`, however the current song will also be included).\nYou can change it to not repeat or repeat one song only by `k!repeat[normal/single]`!")
         else:
-            raise commands.UserInputError()
+            embed = disnake.Embed(title = "Success", color = 0x00ff00)
+            if repeatObject.mode == "normal":
+                embed.add_field(name = "Curreny Mode: Normal", value = "This bot is now not repeating any music.\nYou can change it to repeat 1 song or multiple songs by `k!repeat [single/queue]`!")
+            elif repeatObject.mode == "single":
+                embed.add_field(name = "Current Mode: Single", value = "This bot is now constantly repeating one single song.\nYou can change it to not repeat songs or repeat the queue instead by `k!repeat [normal/queue]`!")
+            elif repeatObject.mode == "list":
+                embed.add_field(name = "Current Mode: Queue", value = "The bot is now repeating the queue (which can be checked by entering `k!queue`, however the current song will also be included).\nYou can change it to not repeat or repeat one song only by `k!repeat[normal/single]`!")
         embed.set_footer(text = "Repeat • Bot made by 3_n#7069")
         await ctx.send(embed = embed)
 
