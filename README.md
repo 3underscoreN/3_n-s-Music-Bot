@@ -1,4 +1,7 @@
 # MusicBot (Discord Bot) made by 3_n#7069.
+---
+# NOTE
+This bot and repo has been **deprecated** and is replaced by (this repo)[https://github.com/3underscoreN/3_n-s-slash-Music-Bot].
 
 ## Introduction
 This is a bot I write in my free time. As bots like Groovy and Rythm are taken down by YouTube and bots my friends use (ProBot) has poor connectivity in
